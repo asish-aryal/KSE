@@ -328,7 +328,7 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
 
     private void SreSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
     {
-        if (e.Result.Confidence < 0.7)
+        if (e.Result.Confidence < 0.5)
         {
             this.RejectSpeech(e.Result);
             return;
