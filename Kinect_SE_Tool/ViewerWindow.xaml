@@ -63,7 +63,7 @@
             <TextBlock Name="speech_feedback_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,40" Background="#D4D4D4" Height="165" Width="320" FontSize="60" TextAlignment="Center" Foreground="Yellow" TextWrapping="Wrap"></TextBlock>
             <TextBlock Name="Status_Label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#000000" Height="35" Width="80" FontSize="24" TextAlignment="Center" Foreground="White" TextWrapping="Wrap">Status</TextBlock>
             <TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap"></TextBlock>
-            <my:KinectSensorChooser  Name="kinectSensorChooser2" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser1_KinectSensorChanged" Margin="0,0,0,252" />
+            <my:KinectSensorChooser  Name="kinectSensorChooser2" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,252" />
         </Grid>
         
     </Grid>

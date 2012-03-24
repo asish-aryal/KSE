@@ -71,6 +71,7 @@
     <Compile Include="Controller.cs" />
     <Compile Include="File_handler.cs" />
     <Compile Include="Interface_.cs" />
+    <Compile Include="ItemLocationManager.cs" />
     <Compile Include="KinectHandler.cs" />
     <Compile Include="Method_.cs" />
     <Compile Include="Package_.cs" />

@@ -20,43 +20,54 @@ namespace Kinect_SE_Tool
     /// </summary>
     public partial class ViewerWindow : Window
     {
-        private static ViewerWindow viewer_window;
-        private static bool isInstantiated = false;
+		#region Fields (16) 
 
-        private bool doc_loaded = false;
-        private Package_ root;
+        private double aspect_ratio = (0.6125);
+        private Controller controller;
         private Package_ current_package;
-        private List<String> package_depth;
-        
-        
-        private int current_page;
-        private int total_pages;
-        List<PointCollection> item_positions_per_page;
-
-        private int zoom_value;
-        private int max_zoom_width;
+        private ItemLocationManager item_location_manager;
+        private bool doc_loaded = false;
+        private static bool isInstantiated = false;
+        private KinectHandler kinectHandler;
         private int max_zoom_height;
+        private int max_zoom_width;
         private int min_zoom;
+        private Package_ root;
+        private static ViewerWindow viewer_window;
+        private int current_item_width;
 
-        KinectHandler kinectHandler;
-        Controller controller;
-        
-        
+		#endregion Fields 
+
+		#region Constructors (1) 
+
         private ViewerWindow()
         {
             InitializeComponent();
             controller = new Controller();
-            
+            item_location_manager = new ItemLocationManager();
 
-            zoom_value = 150;
-            total_pages = 1;
-            current_page = 1;
-            //max_zoom = (int)main_view.ActualWidth -50;
+            current_item_width = 150;
             min_zoom = 150;
             doc_loaded = false;
-            package_depth = new List<string>();
-            package_depth.Add("root");
         }
+
+		#endregion Constructors 
+
+		#region Methods (35) 
+
+		// Public Methods (12) 
+
+        public Microsoft.Samples.Kinect.WpfViewers.KinectColorViewer get_color_viewer()
+        { return color_viewer; }
+
+        public Image get_image_frame()
+        { return color_view; }
+
+        public TextBlock get_speech_block()
+        { return speech_feedback_value; }
+
+        public TextBlock get_status_block()
+        { return Status_Value; }
 
         public static ViewerWindow getInstance()
         {
@@ -70,141 +81,123 @@ namespace Kinect_SE_Tool
             }
         }
 
-        private void repaint()
+        public void load_root_package()
         {
-            if (doc_loaded)
+            Package_ temp = controller.get_package();
+            if (temp != null)
             {
-                max_zoom_width = (int)main_view.ActualWidth - 50;
-                max_zoom_height = (int)main_view.ActualHeight - 50;
-                main_view.Children.Clear();
-                draw_diagrams();
+                root = temp;
+                current_package = root;
+                doc_loaded = true;
+                current_item_width = min_zoom;
             }
+            repaint();
         }
 
-
-        private void draw_diagrams()
+        public void next_page()
         {
-            List<Classifier_> classifiers = current_package.Children_Classifiers;
-            List<Package_> packages = current_package.Children_Packages;
-
-            int total_items = classifiers.Count + packages.Count;
-            
-            set_item_positions((int)main_view.ActualWidth, (int)main_view.ActualHeight, zoom_value, (int)(zoom_value * 5 / 8), total_items);
-            List<PointCollection> pages_of_positions = item_positions_per_page;
-            total_pages = pages_of_positions.Count;
-            if (total_pages < current_page)
-            { current_page = total_pages; }
-            int no_of_packages = packages.Count;
-            int no_of_classifiers = classifiers.Count;
-            int cur_package_ind = 0;
-            int cur_classifier = 0;
-
-
-            for (int i = 0; i < pages_of_positions.Count; i++)
-            {
-                for (int j = 0; j < pages_of_positions[i].Count; j++)
-                {
-                    if (cur_package_ind < no_of_packages)
-                    {
-                        if (current_page == (i + 1))
-                        { draw_package(pages_of_positions[i][j].X, pages_of_positions[i][j].Y, packages[cur_package_ind].Name, zoom_value); }
-                        cur_package_ind++;
-                    }
-                    else if (cur_classifier < no_of_classifiers)
-                    {
-                        if (current_page == (i + 1))
-                        { draw_class(pages_of_positions[i][j].X, pages_of_positions[i][j].Y, classifiers[cur_classifier], zoom_value); }
-                        cur_classifier++;
-                    }
-                }
-            }
-            page_info.Content = "Page " + current_page + " of " + total_pages;
-
-            string pkg_depth = "";
-            string level_name;
-            for(int i=0; i<package_depth.Count; i++)
-            {
-                level_name = package_depth[i];
-                pkg_depth += level_name.ToUpper();
-                if (package_depth.Count != (i + 1))
-                { pkg_depth += " > "; }
-
-            }
-            depth_info.Content = "Package depth:   " + pkg_depth;
-        }
-
-
-        private void set_item_positions(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items )
-        {
-            List<PointCollection> pages = new List<PointCollection>();
-            int vertical_separation = get_separation_distance(item_height, Canvas_Height);
-            int horizontal_separation = get_separation_distance(item_width, Canvas_Width);
-
-            PointCollection points_in_page;
-            int cur_x;
-            int cur_y;
-
-            int cur_item = 1;
-            while (cur_item <= no_of_items)
-            {
-                points_in_page = new PointCollection();
-                
-                cur_y = vertical_separation;
-                while ((cur_y + item_height) < Canvas_Height) 
-                {
-                    cur_x = horizontal_separation;
-                    while ((cur_x + item_width) < Canvas_Width)
-                    {
-                        points_in_page.Add(new Point((double)cur_x, (double)cur_y));
-                        cur_x = cur_x + item_width + horizontal_separation;
-                        cur_item++;
-                    }
-
-                    cur_y = cur_y + item_height + vertical_separation;
-                }
-                pages.Add(points_in_page);
-            }
-
-            item_positions_per_page = pages;
-        }
-
-
-        private void draw_package(double top_left_X, double top_left_Y, string name_of_class, int width)
-        {
-            draw_package_frame(top_left_X, top_left_Y, width);
-            draw_package_info(top_left_X, top_left_Y, name_of_class, width);
-        }
-
-        private void draw_package_frame(double top_left_X, double top_left_Y, int width)
-        {
-            int name_height = width / 8;
-            int description_height = width / 2;
-            draw_box(top_left_X, top_left_Y, width / 3, name_height);
-            draw_box(top_left_X, top_left_Y + name_height - 2, width, description_height);
-        }
-
-        private void draw_package_info(double top_left_X, double top_left_Y, string name_of_package, int width)
-        {
-            TextBlock package_name_block = new TextBlock();
-            package_name_block.TextWrapping = TextWrapping.Wrap;
-            package_name_block.TextAlignment = TextAlignment.Center;
-            package_name_block.Width = width * 0.9;
-            package_name_block.Height = (width / 2) * 0.9;
-            int character_limit = 60;
-            if (name_of_package.Length <= character_limit)
-            {
-                package_name_block.Text = name_of_package;
-            }
+            if ( item_location_manager.CURRENT_PAGE < item_location_manager.TOTAL_PAGES)
+            { item_location_manager.CURRENT_PAGE += 1;}
             else
-            {
-                package_name_block.Text = name_of_package.Substring(0, character_limit - 3) + "...";
-            }
+            { item_location_manager.CURRENT_PAGE = item_location_manager.TOTAL_PAGES; }
+            repaint();
+        }
 
-            package_name_block.FontFamily = new FontFamily("Courier New");
-            Canvas.SetLeft(package_name_block, top_left_X + width * 0.05);
-            Canvas.SetTop(package_name_block, top_left_Y + (width / 8) * 1.05);
-            package_name_block.FontSize = width / 10;
-            main_view.Children.Add(package_name_block);
+        public void previous_page()
+        {
+            if (item_location_manager.CURRENT_PAGE > 1)
+            { item_location_manager.CURRENT_PAGE -= 1; }
+            else
+            { item_location_manager.CURRENT_PAGE = 1; }
+            repaint();
+        }
+
+        public void zoom_in()
+        {
+            zoom_in(1.05);
+        }
+
+        public void zoom_in(double factor)
+        {
+            if (!doc_loaded)
+            { return; }
+            int proposed_zoom = (int)((double)current_item_width * factor);
+            if ((proposed_zoom <= max_zoom_width) && (proposed_zoom * aspect_ratio <= max_zoom_height))
+            { 
+                current_item_width = proposed_zoom;
+
+                repaint();
+            }
+            else if ((item_location_manager.ITEMS_PER_PAGE == 1) && (current_package.Children_Packages.Count >= item_location_manager.CURRENT_PAGE))
+            {
+                current_package = current_package.Children_Packages[item_location_manager.CURRENT_PAGE - 1];
+                current_item_width = min_zoom;
+                repaint();
+            }
+            
+        }
+
+        public void zoom_out()
+        { zoom_out(1.05); }
+
+        public void zoom_out(double factor)
+        {
+            if (!doc_loaded)
+            { return; }
+            int proposed_zoom = (int)((double)current_item_width / factor);
+            if ((current_item_width == min_zoom) && (current_package.Parent != null))
+            {
+                Package_ pkg;
+                for (int i = 0; i < current_package.Parent.Children_Packages.Count; i++)
+                {
+                    pkg = current_package.Parent.Children_Packages[i];
+                    if (pkg.Equals(current_package))
+                    {
+                        item_location_manager.CURRENT_PAGE = i + 1;
+                        break;
+                    }
+                }
+                current_package = current_package.Parent;
+                if (max_zoom_width * aspect_ratio > max_zoom_height)
+                {
+                    current_item_width = (int)((double)max_zoom_height / aspect_ratio);
+                }
+                else
+                {
+                    current_item_width = max_zoom_width;
+                }
+                repaint();
+            }
+            else if (proposed_zoom > min_zoom)
+            {
+                current_item_width = proposed_zoom;
+                repaint();
+            }
+            else if (proposed_zoom < min_zoom)
+            {
+                current_item_width = min_zoom;
+                repaint();
+            }
+            
+            
+        }
+		// Private Methods (23) 
+
+        private void browse_for_file(object sender, RoutedEventArgs e)
+        {
+            load_root_package();
+        }
+
+        private void draw_box(double top_left_X, double top_left_Y, int width, int height)
+        {
+            Rectangle class_fig = new Rectangle();
+            class_fig.Width = width;
+            class_fig.Height = height;
+            class_fig.Stroke = Brushes.Black;
+            class_fig.StrokeThickness = 2;
+            Canvas.SetTop(class_fig, top_left_Y);
+            Canvas.SetLeft(class_fig, top_left_X);
+            main_view.Children.Add(class_fig);
         }
 
         private void draw_class(double top_left_X, double top_left_Y, Classifier_ classifier, int width)
@@ -212,9 +205,6 @@ namespace Kinect_SE_Tool
             draw_class_frame(top_left_X, top_left_Y, width);
             draw_class_info(top_left_X, top_left_Y, classifier, width);
         }
-
-
-
 
         private void draw_class_frame(double top_left_X, double top_left_Y, int width)
         {
@@ -228,9 +218,9 @@ namespace Kinect_SE_Tool
 
         }
 
-
         private void draw_class_info(double top_left_X, double top_left_Y, Classifier_ classifier, int width)
         {
+            
             TextBlock class_name = new TextBlock();
             TextBlock class_fields = new TextBlock();
             TextBlock class_methods = new TextBlock();
@@ -318,16 +308,100 @@ namespace Kinect_SE_Tool
             main_view.Children.Add(class_name);
         }
 
-        private void draw_box(double top_left_X, double top_left_Y, int width, int height)
+        private void draw_diagrams()
         {
-            Rectangle class_fig = new Rectangle();
-            class_fig.Width = width;
-            class_fig.Height = height;
-            class_fig.Stroke = Brushes.Black;
-            class_fig.StrokeThickness = 2;
-            Canvas.SetTop(class_fig, top_left_Y);
-            Canvas.SetLeft(class_fig, top_left_X);
-            main_view.Children.Add(class_fig);
+            List<Classifier_> classifiers = current_package.Children_Classifiers;
+            List<Package_> packages = current_package.Children_Packages;
+            int total_items = classifiers.Count + packages.Count;
+            item_location_manager.recalcuate((int)main_view.ActualWidth, (int)main_view.ActualHeight, current_item_width, (int)(current_item_width * aspect_ratio), total_items);
+            
+            
+            if (item_location_manager.TOTAL_PAGES < item_location_manager.CURRENT_PAGE)
+            { item_location_manager.CURRENT_PAGE= item_location_manager.TOTAL_PAGES; }
+            int no_of_packages = packages.Count;
+            int no_of_classifiers = classifiers.Count;
+
+            Point current_point;
+            for (int i = 0; i < (no_of_classifiers + no_of_packages); i++)
+            {
+                if ((i >= (item_location_manager.CURRENT_PAGE - 1) * item_location_manager.ITEMS_PER_PAGE) && (i < item_location_manager.CURRENT_PAGE * item_location_manager.ITEMS_PER_PAGE))
+                {
+                    current_point = item_location_manager.get_point(i + 1);
+                    if (i < no_of_packages)
+                    { draw_package(current_point.X, current_point.Y, packages[i].Name, current_item_width); }
+                    else if ((i - no_of_packages) < no_of_classifiers)
+                    {
+                        draw_class(current_point.X, current_point.Y, classifiers[i - no_of_packages], current_item_width);
+                    }
+                }
+            }
+
+            page_info.Content = "Page " + item_location_manager.CURRENT_PAGE + " of " + item_location_manager.TOTAL_PAGES; ;
+            depth_info.Content = "Package depth:   " + get_package_heirarchy(current_package); ;
+        }
+
+
+        private String get_package_heirarchy(Package_ package)
+        {
+            if (package.Parent != null)
+            { return get_package_heirarchy(package.Parent) + " > " + package.Name; }
+            else
+            { return package.Name; }
+        }
+
+        private void draw_package(double top_left_X, double top_left_Y, string name_of_class, int width)
+        {
+            draw_package_frame(top_left_X, top_left_Y, width);
+            draw_package_info(top_left_X, top_left_Y, name_of_class, width);
+        }
+
+        private void draw_package_frame(double top_left_X, double top_left_Y, int width)
+        {
+            int name_height = width / 8;
+            int description_height = width / 2;
+            draw_box(top_left_X, top_left_Y, width / 3, name_height);
+            draw_box(top_left_X, top_left_Y + name_height - 2, width, description_height);
+        }
+
+        private void draw_package_info(double top_left_X, double top_left_Y, string name_of_package, int width)
+        {
+            TextBlock package_name_block = new TextBlock();
+            package_name_block.TextWrapping = TextWrapping.Wrap;
+            package_name_block.TextAlignment = TextAlignment.Center;
+            package_name_block.Width = width * 0.9;
+            package_name_block.Height = (width / 2) * 0.9;
+            int character_limit = 60;
+            if (name_of_package.Length <= character_limit)
+            {
+                package_name_block.Text = name_of_package;
+            }
+            else
+            {
+                package_name_block.Text = name_of_package.Substring(0, character_limit - 3) + "...";
+            }
+
+            package_name_block.FontFamily = new FontFamily("Courier New");
+            Canvas.SetLeft(package_name_block, top_left_X + width * 0.05);
+            Canvas.SetTop(package_name_block, top_left_Y + (width / 8) * 1.05);
+            package_name_block.FontSize = width / 10;
+            main_view.Children.Add(package_name_block);
+        }
+
+        private int get_items_per_column()
+        {
+            int class_frame_width = current_item_width;
+            int class_frame_height = (int) ((double)class_frame_width * aspect_ratio);
+            int height_of_canvas = (int)main_view.ActualHeight;
+            int vertical_separation = get_separation_distance(class_frame_height, height_of_canvas);
+            return height_of_canvas / (class_frame_height + vertical_separation);
+        }
+
+        private int get_items_per_row()
+        {
+            int class_frame_width = current_item_width;
+            int width_of_canvas = (int)main_view.ActualWidth;
+            int horizontal_separation = get_separation_distance(class_frame_width, width_of_canvas);
+            return width_of_canvas / (class_frame_width + horizontal_separation);
         }
 
         private int get_separation_distance(int space_taken_by_frame, int total_space)
@@ -347,117 +421,6 @@ namespace Kinect_SE_Tool
 
             return separation;
         }
-
-        private int get_items_per_column()
-        {
-            int class_frame_width = zoom_value;
-            int class_frame_height = class_frame_width * 5 / 8;
-            int height_of_canvas = (int)main_view.ActualHeight;
-            int vertical_separation = get_separation_distance(class_frame_height, height_of_canvas);
-            return height_of_canvas / (class_frame_height + vertical_separation);
-        }
-
-        private int get_items_per_row()
-        {
-            int class_frame_width = zoom_value;
-            int width_of_canvas = (int)main_view.ActualWidth;
-            int horizontal_separation = get_separation_distance(class_frame_width, width_of_canvas);
-            return width_of_canvas / (class_frame_width + horizontal_separation);
-        }
-
-
-
-        public void zoom_in()
-        {
-            zoom_in(1.05);
-        }
-
-
-        public void zoom_in(double factor)
-        {
-            if (!doc_loaded)
-            { return; }
-            int proposed_zoom = (int)((double)zoom_value * factor);
-            if ((proposed_zoom <= max_zoom_width) && (proposed_zoom * 5 / 8 <= max_zoom_height))
-            { 
-                zoom_value = proposed_zoom;
-                repaint();
-            }
-            else if ((item_positions_per_page[current_page-1].Count == 1) && (current_package.Children_Packages.Count >= current_page))
-            {
-                current_package = current_package.Children_Packages[current_page - 1];
-                package_depth.Add(current_package.Name);
-                zoom_value = min_zoom;
-                repaint();
-            }
-            
-        }
-
-        public void zoom_out()
-        { zoom_out(1.05); }
-
-        public void zoom_out(double factor)
-        {
-            if (!doc_loaded)
-            { return; }
-            int proposed_zoom = (int)((double)zoom_value / factor);
-            if ((zoom_value == min_zoom) && (current_package.Parent != null))
-            {
-                //current_page = current_package.Parent.Children_Packages.FindIndex(current_package) + 1;
-                Package_ pkg;
-                for (int i = 0; i < current_package.Parent.Children_Packages.Count; i++)
-                {
-                    pkg = current_package.Parent.Children_Packages[i];
-                    if (pkg.Equals(current_package))
-                    {
-                        current_page = i + 1;
-                        break;
-                    }
-                }
-                current_package = current_package.Parent;
-                package_depth.RemoveAt(package_depth.Count - 1);
-                if (max_zoom_width * 5 / 8 > max_zoom_height)
-                {
-                    zoom_value = max_zoom_height * 8 / 5;
-                }
-                else
-                {
-                    zoom_value = max_zoom_width;
-                }
-                repaint();
-            }
-            else if (proposed_zoom > min_zoom)
-            {
-                zoom_value = proposed_zoom;
-                repaint();
-            }
-            else if (proposed_zoom < min_zoom)
-            {
-                zoom_value = min_zoom;
-                repaint();
-            }
-            
-            
-        }
-
-        public void previous_page()
-        {
-            if (current_page > 1)
-            { current_page--; }
-            else
-            { current_page = 1; }
-            repaint();
-        }
-
-        public void next_page()
-        {
-            if (current_page < total_pages)
-            { current_page++; }
-            else
-            { current_page = total_pages; }
-            repaint();
-        }
-
 
         private void keyboard_input(object sender, KeyEventArgs e)
         {
@@ -488,80 +451,7 @@ namespace Kinect_SE_Tool
             }
         }
 
-        public void load_root_package()
-        {
-            Package_ temp = controller.get_package();
-            if (temp != null)
-            {
-                root = temp;
-                current_package = root;
-                doc_loaded = true;
-                zoom_value = min_zoom;
-                current_page = 1;
-                package_depth = new List<String>();
-                package_depth.Add("root");
-            }
-            repaint();
-        }
-
-        private void zoom_out_Click(object sender, RoutedEventArgs e)
-        {
-            zoom_out();
-        }
-
-        private void zoom_in_Click(object sender, RoutedEventArgs e)
-        {
-            zoom_in();
-        }
-
-
-
-        private void browse_for_file(object sender, RoutedEventArgs e)
-        {
-            load_root_package();
-        }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            repaint();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            kinectHandler = new KinectHandler();
-            kinectHandler.start();
-
-            //Thread kHandler = new Thread(new ThreadStart(kinectHandler.start));
-            //kHandler.SetApartmentState(ApartmentState.STA);
-            //kHandler.Start();
-            //while (!kHandler.IsAlive) ;
-
-
-
-            //if (KinectSensor.KinectSensors.Count > 0)
-            //{
-            //    KinectSensor newSensor = KinectSensor.KinectSensors[0];
-            //    newSensor.ColorStream.Enable();
-            //    newSensor.DepthStream.Enable();
-            //    newSensor.SkeletonStream.Enable();
-            //    newSensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(newSensor_AllFramesReady);
-            //    try
-            //    {
-            //        newSensor.Start();
-            //    }
-            //    catch (System.IO.IOException)
-            //    {
-            //        kinectSensorChooser1.AppConflictOccurred();
-
-            //    }
-            //}
-
-
-            Keyboard.Focus(zoom_out_button);
-            
-        }
-
-        private void kinectSensorChooser1_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void kinectSensorChooser2_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             //KinectSensor oldSensor = (KinectSensor)e.OldValue;
             //StopKinect(oldSensor);
@@ -596,23 +486,6 @@ namespace Kinect_SE_Tool
             //throw new NotImplementedException();
         }
 
-        public Image get_image_frame()
-        { return color_view; }
-
-        public TextBlock get_status_block()
-        { return Status_Value; }
-
-        public TextBlock get_speech_block()
-        { return speech_feedback_value; }
-
-        public Microsoft.Samples.Kinect.WpfViewers.KinectColorViewer get_color_viewer()
-        { return color_viewer; }
-
-
-
-        //public Microsoft.Samples.Kinect.WpfViewers.KinectSensorChooser get_sensor_chooser()
-        //{ return kinectSensorChooser1; }
-
         private void newSensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
             Image img = new Image();
@@ -634,7 +507,48 @@ namespace Kinect_SE_Tool
             //throw new NotImplementedException();
         }
 
+        private void repaint()
+        {
+            if (doc_loaded)
+            {
+                max_zoom_width = (int)main_view.ActualWidth - 50;
+                max_zoom_height = (int)main_view.ActualHeight - 50;
+                main_view.Children.Clear();
+                draw_diagrams();
+            }
+        }
 
+        private void set_item_positions(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items )
+        {
+            List<PointCollection> pages = new List<PointCollection>();
+            int vertical_separation = get_separation_distance(item_height, Canvas_Height);
+            int horizontal_separation = get_separation_distance(item_width, Canvas_Width);
+
+            PointCollection points_in_page;
+            int cur_x;
+            int cur_y;
+
+            int cur_item = 1;
+            while (cur_item <= no_of_items)
+            {
+                points_in_page = new PointCollection();
+                
+                cur_y = vertical_separation;
+                while ((cur_y + item_height) < Canvas_Height) 
+                {
+                    cur_x = horizontal_separation;
+                    while ((cur_x + item_width) < Canvas_Width)
+                    {
+                        points_in_page.Add(new Point((double)cur_x, (double)cur_y));
+                        cur_x = cur_x + item_width + horizontal_separation;
+                        cur_item++;
+                    }
+
+                    cur_y = cur_y + item_height + vertical_separation;
+                }
+                pages.Add(points_in_page);
+            }
+        }
 
         private void StopKinect(KinectSensor sensor)
         {
@@ -654,11 +568,29 @@ namespace Kinect_SE_Tool
             window.Show();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            kinectHandler = new KinectHandler();
+            kinectHandler.start();
+            Keyboard.Focus(zoom_out_button);
+            
+        }
 
-        
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            repaint();
+        }
 
+        private void zoom_in_Click(object sender, RoutedEventArgs e)
+        {
+            zoom_in();
+        }
 
+        private void zoom_out_Click(object sender, RoutedEventArgs e)
+        {
+            zoom_out();
+        }
 
-
+		#endregion Methods 
     }
 }
