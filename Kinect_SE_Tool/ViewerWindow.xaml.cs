@@ -20,21 +20,21 @@ namespace Kinect_SE_Tool
     /// </summary>
     public partial class ViewerWindow : Window
     {
-		#region Fields (16) 
+		#region Fields (13) 
 
         private double aspect_ratio = (0.6125);
         private Controller controller;
+        private int current_item_width;
         private Package_ current_package;
-        private ItemLocationManager item_location_manager;
         private bool doc_loaded = false;
         private static bool isInstantiated = false;
+        private ItemLocationManager item_location_manager;
         private KinectHandler kinectHandler;
         private int max_zoom_height;
         private int max_zoom_width;
         private int min_zoom;
         private Package_ root;
         private static ViewerWindow viewer_window;
-        private int current_item_width;
 
 		#endregion Fields 
 
@@ -53,9 +53,9 @@ namespace Kinect_SE_Tool
 
 		#endregion Constructors 
 
-		#region Methods (35) 
+		#region Methods (40) 
 
-		// Public Methods (12) 
+		// Public Methods (16) 
 
         public Microsoft.Samples.Kinect.WpfViewers.KinectColorViewer get_color_viewer()
         { return color_viewer; }
@@ -94,22 +94,46 @@ namespace Kinect_SE_Tool
             repaint();
         }
 
+        public void move_selection_down()
+        {
+            for (int i = 0; i < item_location_manager.ITEMS_PER_COLUMN; i++)
+            { move_selection_right(); }
+        }
+
+        public void move_selection_left()
+        {
+            if (((item_location_manager.SELECTED_ITEM - 1) > 0))
+            {
+                item_location_manager.SELECTED_ITEM -= 1;
+                repaint();
+            }
+        }
+
+        public void move_selection_right()
+        {
+            if (((item_location_manager.SELECTED_ITEM + 1) <= (current_package.Children_Packages.Count + current_package.Children_Classifiers.Count)))
+            {
+                item_location_manager.SELECTED_ITEM += 1;
+                repaint();
+            }
+        }
+
+        public void move_selection_up()
+        {
+            for (int i = 0; i < item_location_manager.ITEMS_PER_COLUMN; i++)
+            { move_selection_left(); }
+        }
+
         public void next_page()
         {
-            if ( item_location_manager.CURRENT_PAGE < item_location_manager.TOTAL_PAGES)
-            { item_location_manager.CURRENT_PAGE += 1;}
-            else
-            { item_location_manager.CURRENT_PAGE = item_location_manager.TOTAL_PAGES; }
-            repaint();
+            for (int i = 0; i < item_location_manager.ITEMS_PER_PAGE; i++)
+            { move_selection_right(); }
         }
 
         public void previous_page()
         {
-            if (item_location_manager.CURRENT_PAGE > 1)
-            { item_location_manager.CURRENT_PAGE -= 1; }
-            else
-            { item_location_manager.CURRENT_PAGE = 1; }
-            repaint();
+            for (int i = 0; i < item_location_manager.ITEMS_PER_PAGE; i++)
+            { move_selection_left(); }
         }
 
         public void zoom_in()
@@ -181,19 +205,21 @@ namespace Kinect_SE_Tool
             
             
         }
-		// Private Methods (23) 
+		// Private Methods (24) 
 
         private void browse_for_file(object sender, RoutedEventArgs e)
         {
             load_root_package();
         }
 
-        private void draw_box(double top_left_X, double top_left_Y, int width, int height)
+        private void draw_box(double top_left_X, double top_left_Y, double width, double height, Brush brush, Boolean fill)
         {
             Rectangle class_fig = new Rectangle();
             class_fig.Width = width;
             class_fig.Height = height;
-            class_fig.Stroke = Brushes.Black;
+            class_fig.Stroke = brush;
+            if (fill)
+            { class_fig.Fill = brush; }
             class_fig.StrokeThickness = 2;
             Canvas.SetTop(class_fig, top_left_Y);
             Canvas.SetLeft(class_fig, top_left_X);
@@ -212,9 +238,9 @@ namespace Kinect_SE_Tool
             int name_height = width / 8;
             int variables_height = width / 4;
             int methods_height = width / 4;
-            draw_box(top_left_X, top_left_Y, width, name_height);
-            draw_box(top_left_X, top_left_Y, width, variables_height + name_height);
-            draw_box(top_left_X, top_left_Y, width, methods_height + variables_height + name_height);
+            draw_box(top_left_X, top_left_Y, width, name_height, Brushes.Black, false);
+            draw_box(top_left_X, top_left_Y, width, variables_height + name_height, Brushes.Black, false);
+            draw_box(top_left_X, top_left_Y, width, methods_height + variables_height + name_height, Brushes.Black, false);
 
         }
 
@@ -327,26 +353,26 @@ namespace Kinect_SE_Tool
                 if ((i >= (item_location_manager.CURRENT_PAGE - 1) * item_location_manager.ITEMS_PER_PAGE) && (i < item_location_manager.CURRENT_PAGE * item_location_manager.ITEMS_PER_PAGE))
                 {
                     current_point = item_location_manager.get_point(i + 1);
+
+                    if ((i+1) == item_location_manager.SELECTED_ITEM)
+                    {
+                        draw_box(current_point.X - current_item_width/20, current_point.Y - current_item_width/20, current_item_width + current_item_width/10, current_item_width * aspect_ratio + current_item_width/10, Brushes.WhiteSmoke, true);
+                    }
+
                     if (i < no_of_packages)
                     { draw_package(current_point.X, current_point.Y, packages[i].Name, current_item_width); }
                     else if ((i - no_of_packages) < no_of_classifiers)
                     {
                         draw_class(current_point.X, current_point.Y, classifiers[i - no_of_packages], current_item_width);
                     }
+
+                    
+
                 }
             }
 
             page_info.Content = "Page " + item_location_manager.CURRENT_PAGE + " of " + item_location_manager.TOTAL_PAGES; ;
             depth_info.Content = "Package depth:   " + get_package_heirarchy(current_package); ;
-        }
-
-
-        private String get_package_heirarchy(Package_ package)
-        {
-            if (package.Parent != null)
-            { return get_package_heirarchy(package.Parent) + " > " + package.Name; }
-            else
-            { return package.Name; }
         }
 
         private void draw_package(double top_left_X, double top_left_Y, string name_of_class, int width)
@@ -359,8 +385,8 @@ namespace Kinect_SE_Tool
         {
             int name_height = width / 8;
             int description_height = width / 2;
-            draw_box(top_left_X, top_left_Y, width / 3, name_height);
-            draw_box(top_left_X, top_left_Y + name_height - 2, width, description_height);
+            draw_box(top_left_X, top_left_Y, width / 3, name_height, Brushes.Black, false);
+            draw_box(top_left_X, top_left_Y + name_height - 2, width, description_height, Brushes.Black, false);
         }
 
         private void draw_package_info(double top_left_X, double top_left_Y, string name_of_package, int width)
@@ -402,6 +428,14 @@ namespace Kinect_SE_Tool
             int width_of_canvas = (int)main_view.ActualWidth;
             int horizontal_separation = get_separation_distance(class_frame_width, width_of_canvas);
             return width_of_canvas / (class_frame_width + horizontal_separation);
+        }
+
+        private String get_package_heirarchy(Package_ package)
+        {
+            if (package.Parent != null)
+            { return get_package_heirarchy(package.Parent) + " > " + package.Name; }
+            else
+            { return package.Name; }
         }
 
         private int get_separation_distance(int space_taken_by_frame, int total_space)
@@ -447,6 +481,17 @@ namespace Kinect_SE_Tool
                 {
                     load_root_package();
                 }
+                else if (e.Key == Key.W)
+                { move_selection_up();
+                }
+                else if (e.Key == Key.S)
+                { move_selection_down(); }
+                else if (e.Key == Key.A)
+                { move_selection_left(); }
+                else if (e.Key == Key.D)
+                { move_selection_right(); }
+
+                Keyboard.Focus(zoom_out_button);
 
             }
         }

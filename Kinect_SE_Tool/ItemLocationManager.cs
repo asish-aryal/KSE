@@ -9,10 +9,12 @@ namespace Kinect_SE_Tool
 {
     public class ItemLocationManager
     {
-		#region Fields (5) 
+		#region Fields (7) 
 
         private int current_page;
+        private int items_per_column;
         private int items_per_page;
+        private int items_per_row;
         private PointCollection points_in_a_page;
         private int selected_element;
         private int total_pages;
@@ -23,14 +25,13 @@ namespace Kinect_SE_Tool
 
         public ItemLocationManager()
         {
-            
             current_page = 1;
-        
+            selected_element = 1;
         }
 
 		#endregion Constructors 
 
-		#region Properties (4) 
+		#region Properties (6) 
 
         public int CURRENT_PAGE
         {
@@ -38,9 +39,19 @@ namespace Kinect_SE_Tool
             set { current_page = value; }
         }
 
+        public int ITEMS_PER_COLUMN
+        {
+            get { return items_per_column; }
+        }
+
         public int ITEMS_PER_PAGE
         {
             get { return items_per_page; }
+        }
+
+        public int ITEMS_PER_ROW
+        {
+            get { return items_per_row; }
         }
 
         public int SELECTED_ITEM
@@ -77,13 +88,14 @@ namespace Kinect_SE_Tool
             int cur_x;
             int cur_y;
 
-            
-                
+
+            items_per_row = 0;                
             cur_y = vertical_separation;
-            while ((cur_y + item_height) < Canvas_Height) 
+            while ((cur_y + item_height) <= Canvas_Height)
             {
+                items_per_row++;
                 cur_x = horizontal_separation;
-                while ((cur_x + item_width) < Canvas_Width)
+                while ((cur_x + item_width) <= Canvas_Width)
                 {
                     points_in_a_page.Add(new Point((double)cur_x, (double)cur_y));
                     cur_x = cur_x + item_width + horizontal_separation;
@@ -92,16 +104,20 @@ namespace Kinect_SE_Tool
                 cur_y = cur_y + item_height + vertical_separation;
             }
 
-            
-
-            //item_positions_per_page = pages;
             if ((no_of_items % points_in_a_page.Count) == 0)
             { total_pages = no_of_items / points_in_a_page.Count; }
             else
             { total_pages = (no_of_items / points_in_a_page.Count) + 1;}
 
+            if ((selected_element % points_in_a_page.Count) == 0)
+            { current_page = selected_element / points_in_a_page.Count; }
+            else
+            {
+                current_page = selected_element / points_in_a_page.Count + 1;
+            }
 
             items_per_page = points_in_a_page.Count;
+            items_per_column = items_per_page / items_per_row;
             
         }
 		// Private Methods (1) 
