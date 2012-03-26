@@ -35,6 +35,7 @@ namespace Kinect_SE_Tool
         private int min_zoom;
         private Package_ root;
         private static ViewerWindow viewer_window;
+        private Ellipse pointer;
 
 		#endregion Fields 
 
@@ -49,6 +50,8 @@ namespace Kinect_SE_Tool
             current_item_width = 150;
             min_zoom = 150;
             doc_loaded = false;
+            initialise_pointer();
+
         }
 
 		#endregion Constructors 
@@ -56,6 +59,21 @@ namespace Kinect_SE_Tool
 		#region Methods (40) 
 
 		// Public Methods (16) 
+
+        private void initialise_pointer()
+        {
+            pointer = new Ellipse();
+            pointer.Width = 20;
+            pointer.Height = 20;
+            pointer.Fill = Brushes.Green;
+            pointer.Opacity = 0.5;
+            Canvas.SetLeft(pointer, 50);
+            Canvas.SetTop(pointer, 50);
+            main_view.Children.Add(pointer);
+            Canvas.SetZIndex(pointer, 2);
+            //pointer.Visibility = Visibility.Hidden;
+            
+        }
 
         public Microsoft.Samples.Kinect.WpfViewers.KinectColorViewer get_color_viewer()
         { return color_viewer; }
@@ -68,6 +86,9 @@ namespace Kinect_SE_Tool
 
         public TextBlock get_status_block()
         { return Status_Value; }
+
+        public Ellipse get_pointer()
+        { return pointer; }
 
         public static ViewerWindow getInstance()
         {
@@ -161,6 +182,29 @@ namespace Kinect_SE_Tool
             
         }
 
+        public void update_selection_from_pointer()
+        {
+            pointer.Visibility = Visibility.Visible;
+
+            
+
+            double from_top = Canvas.GetTop(pointer);
+            double from_left = Canvas.GetLeft(pointer);
+
+            for (int i = 0; i < item_location_manager.ITEMS_PER_PAGE; i++)
+            {
+                double y_pos = item_location_manager.get_point((item_location_manager.CURRENT_PAGE-1)*item_location_manager.ITEMS_PER_PAGE +i+1).Y;
+                double x_pos = item_location_manager.get_point((item_location_manager.CURRENT_PAGE-1)*item_location_manager.ITEMS_PER_PAGE +i+1).X;
+                if(((from_top > y_pos) && (from_top < (y_pos+current_item_width*aspect_ratio))) && ((from_left > x_pos) && (from_left < (x_pos + current_item_width))))
+                {
+                    item_location_manager.SELECTED_ITEM =(item_location_manager.CURRENT_PAGE-1)*item_location_manager.ITEMS_PER_PAGE + i+1;
+                    repaint();
+                    break;
+                }
+            }
+
+        }
+
         public void zoom_out()
         { zoom_out(1.05); }
 
@@ -223,6 +267,7 @@ namespace Kinect_SE_Tool
             class_fig.StrokeThickness = 2;
             Canvas.SetTop(class_fig, top_left_Y);
             Canvas.SetLeft(class_fig, top_left_X);
+            Canvas.SetZIndex(class_fig, 1);
             main_view.Children.Add(class_fig);
         }
 
@@ -318,6 +363,10 @@ namespace Kinect_SE_Tool
             Canvas.SetTop(class_fields, top_left_Y + width/8);
             Canvas.SetTop(class_methods, top_left_Y + width*3/8 );
 
+            Canvas.SetZIndex(class_name, 1);
+            Canvas.SetZIndex(class_fields, 1);
+            Canvas.SetZIndex(class_methods, 1);
+
 
             class_name.FontSize = width / 10;
 
@@ -356,7 +405,7 @@ namespace Kinect_SE_Tool
 
                     if ((i+1) == item_location_manager.SELECTED_ITEM)
                     {
-                        draw_box(current_point.X - current_item_width/20, current_point.Y - current_item_width/20, current_item_width + current_item_width/10, current_item_width * aspect_ratio + current_item_width/10, Brushes.WhiteSmoke, true);
+                        draw_box(current_point.X - current_item_width/20, current_point.Y - current_item_width/20, current_item_width + current_item_width/10, current_item_width * aspect_ratio + current_item_width/10, Brushes.White, true);
                     }
 
                     if (i < no_of_packages)
@@ -370,6 +419,10 @@ namespace Kinect_SE_Tool
 
                 }
             }
+
+
+
+            main_view.Children.Add(pointer);
 
             page_info.Content = "Page " + item_location_manager.CURRENT_PAGE + " of " + item_location_manager.TOTAL_PAGES; ;
             depth_info.Content = "Package depth:   " + get_package_heirarchy(current_package); ;
@@ -409,6 +462,7 @@ namespace Kinect_SE_Tool
             package_name_block.FontFamily = new FontFamily("Courier New");
             Canvas.SetLeft(package_name_block, top_left_X + width * 0.05);
             Canvas.SetTop(package_name_block, top_left_Y + (width / 8) * 1.05);
+            Canvas.SetZIndex(package_name_block, 1);
             package_name_block.FontSize = width / 10;
             main_view.Children.Add(package_name_block);
         }
