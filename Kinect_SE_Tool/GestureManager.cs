@@ -15,32 +15,58 @@ namespace Kinect_SE_Tool
         KinectSensor sensor;
         private const int skeletonCount = 6;
         private Skeleton[] allSkeletons = new Skeleton[skeletonCount];
-        private List<Skeleton> skeletonHistory;
-
-        private bool zooming_in = false;
+        //private List<Joint> rightHandPositions;
+        int itemsInHistory=10;
+        private SkeletonHistoryManager historyManager;
+        //private bool zooming_in = false;
 
 
         public GestureManager(KinectSensor sensor)
         {
             this.sensor = sensor;
-            
+            historyManager= new SkeletonHistoryManager(itemsInHistory);
+            //rightHandPositions = new List<Joint>();
         }
 
 
         public void processFrames(AllFramesReadyEventArgs e)
         {
             Skeleton first = GetFirstSkeleton(e);
+            if (first == null || (vWindow.get_pointer_right() == null)) return;
             update_pointer(first);
 
-            
-            
+            historyManager.addToHistory(first);
+
+            if (historyManager.IsReady)
+            { recogniseGestures(); }
+        }
+
+
+        private void recogniseGestures()
+        {
+            if (historyManager.getJointHistory(JointNames.Joints.HandRight).Equals(historyManager.getJointHistory(JointNames.Joints.HandRight)[itemsInHistory - 1]))
+            {MessageBox.Show("All the items in the array refer to the same joint!");}
+            double initial_position = historyManager.getJointHistory(JointNames.Joints.HandLeft)[0].Position.Z;
+            double final_position = historyManager.getJointHistory(JointNames.Joints.HandLeft)[itemsInHistory - 1].Position.Z;
+            double diff = final_position - initial_position;
+            vWindow.speech_feedback_value.Text = diff.ToString();
+            if (diff >= 0.25)
+            { 
+                vWindow.zoom_in(1.5);
+                historyManager.clearHistory();
+            }
+            else if (diff <= -0.25)
+            { 
+                vWindow.zoom_out(1.6);
+                historyManager.clearHistory();
+            }
         }
 
         private void update_pointer(Skeleton sk)
         {
             
 
-            if (sk == null || (vWindow.get_pointer_right() == null)) return;
+            
 
 
 
@@ -51,6 +77,8 @@ namespace Kinect_SE_Tool
             //Canvas.SetLeft(vWindow.get_pointer_left(), scaledJoint.Position.X);
             //Canvas.SetTop(vWindow.get_pointer_left(), scaledJoint.Position.Y);
             ScalePosition(vWindow.get_pointer_right(), sk.Joints[JointType.HandRight]);
+
+            vWindow.get_pointer_right().Width = vWindow.get_pointer_right().Height = Math.Abs((int)((sk.Joints[JointType.HandLeft].Position.Z-0.8)*100));
 
             //GetCameraPoint(first, e);
             vWindow.update_selection_from_pointer();
