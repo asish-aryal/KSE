@@ -70,6 +70,7 @@
     <Compile Include="Class_.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="File_handler.cs" />
+    <Compile Include="GestureManager.cs" />
     <Compile Include="Interface_.cs" />
     <Compile Include="ItemLocationManager.cs" />
     <Compile Include="KinectHandler.cs" />

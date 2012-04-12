@@ -14,7 +14,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">JavaDoc Explorer</TextBlock>
-        <Canvas Grid.Column="0" Grid.Row="1"  Name="main_view"  MinHeight="417" MinWidth="650"  Focusable="False" IsManipulationEnabled="False" Background="#DBD4D4D4" ClipToBounds="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,0,0"></Canvas>
+        <Canvas Grid.Column="0" Grid.Row="1"  Name="main_view"  MinHeight="417" MinWidth="650"  Focusable="False" IsManipulationEnabled="False" Background="#DBD4D4D4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,0,0" ClipToBounds="True"></Canvas>
         <Label Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,340,0" Content="Page" Height="28" HorizontalAlignment="Right" Name="page_info" Width="151" />
         <Label Grid.Row="2" Grid.ColumnSpan="2" Margin="10,0,0,0" Content="Depth:" Height="28" HorizontalAlignment="Left" Name="depth_info" Width="750" />
 

@@ -26,8 +26,8 @@ namespace Kinect_SE_Tool
         private TextBlock speech_block;
         private TextBlock status_block;
         KinectColorViewer color_viewer;
-        private const int skeletonCount = 6;
-        private Skeleton[] allSkeletons = new Skeleton[skeletonCount];
+
+        private GestureManager gManager;
 
 
 
@@ -38,6 +38,7 @@ namespace Kinect_SE_Tool
            status_block = vWindow.get_status_block();
            Image color_view = vWindow.get_image_frame();
            color_viewer = vWindow.get_color_viewer();
+           gManager = new GestureManager(_sensor);
         }
 
 
@@ -205,7 +206,7 @@ namespace Kinect_SE_Tool
                     Smoothing = 0.3f,
                     Correction = 0.0f,
                     Prediction = 0.0f,
-                    JitterRadius = 1.0f,
+                    JitterRadius = 0.5f,
                     MaxDeviationRadius = 0.5f
                 };
                 kinect_sensor.SkeletonStream.Enable(parameters);
@@ -215,6 +216,8 @@ namespace Kinect_SE_Tool
                 //kinect_sensor.SkeletonStream.Enable();
                 kinect_sensor.DepthStream.Enable();
                 kinect_sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(_sensor_AllFramesReady);
+
+
 
                 speechRecognizer = CreateSpeechRecognizer();
                 
@@ -428,6 +431,7 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
 
         private void _sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
+            gManager.processFrames(e);
 
             //if (closing)
             //{
@@ -435,113 +439,12 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
             //}
 
             //Get a skeleton
-            Skeleton first = GetFirstSkeleton(e);
-
-            if (first == null || (vWindow.get_pointer() == null))
-            {
-                return;
-            }
-
-
-
-            //set scaled position
-            //ScalePosition(headImage, first.Joints[JointType.Head]);
-            //ScalePosition(leftEllipse, first.Joints[JointType.HandLeft]);
-            ScalePosition(vWindow.get_pointer(), first.Joints[JointType.HandRight]);
             
-            GetCameraPoint(first, e);
-            vWindow.update_selection_from_pointer();
         }
 
-        void GetCameraPoint(Skeleton first, AllFramesReadyEventArgs e)
-        {
-
-            using (DepthImageFrame depth = e.OpenDepthImageFrame())
-            {
-                if (depth == null ||
-                    _sensor == null)
-                {
-                    return;
-                }
 
 
-                //Map a joint location to a point on the depth map
-                //head
-                DepthImagePoint headDepthPoint =
-                    depth.MapFromSkeletonPoint(first.Joints[JointType.Head].Position);
-                //left hand
-                DepthImagePoint leftDepthPoint =
-                    depth.MapFromSkeletonPoint(first.Joints[JointType.HandLeft].Position);
-                //right hand
-                DepthImagePoint rightDepthPoint =
-                    depth.MapFromSkeletonPoint(first.Joints[JointType.HandRight].Position);
-
-
-                //Map a depth point to a point on the color image
-                //head
-                ColorImagePoint headColorPoint =
-                    depth.MapToColorImagePoint(headDepthPoint.X, headDepthPoint.Y,
-                    ColorImageFormat.RgbResolution640x480Fps30);
-                //left hand
-                ColorImagePoint leftColorPoint =
-                    depth.MapToColorImagePoint(leftDepthPoint.X, leftDepthPoint.Y,
-                    ColorImageFormat.RgbResolution640x480Fps30);
-                //right hand
-                ColorImagePoint rightColorPoint =
-                    depth.MapToColorImagePoint(rightDepthPoint.X, rightDepthPoint.Y,
-                    ColorImageFormat.RgbResolution640x480Fps30);
-
-
-                //Set location
-                //CameraPosition(headImage, headColorPoint);
-                //CameraPosition(leftEllipse, leftColorPoint);
-                //CameraPosition(rightEllipse, rightColorPoint);
-            }
-        }
-
-        private void CameraPosition(FrameworkElement element, ColorImagePoint point)
-        {
-            //Divide by 2 for width and height so point is right in the middle 
-            // instead of in top/left corner
-            Canvas.SetLeft(element, point.X - element.Width / 2);
-            Canvas.SetTop(element, point.Y - element.Height / 2);
-
-        }
-
-        private void ScalePosition(FrameworkElement element, Joint joint)
-        {
-            //convert the value to X/Y
-            //Joint scaledJoint = joint.ScaleTo(1280, 720);
-
-            //convert & scale (.3 = means 1/3 of joint distance)
-            Joint scaledJoint = joint.ScaleTo(1280, 720, .3f, .3f);
-
-            Canvas.SetLeft(element, scaledJoint.Position.X);
-            Canvas.SetTop(element, scaledJoint.Position.Y);
-
-        }
-
-        Skeleton GetFirstSkeleton(AllFramesReadyEventArgs e)
-        {
-            using (SkeletonFrame skeletonFrameData = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrameData == null)
-                {
-                    return null;
-                }
-
-
-                skeletonFrameData.CopySkeletonDataTo(allSkeletons);
-
-                //get the first tracked skeleton
-                Skeleton first = (from s in allSkeletons
-                                  where s.TrackingState == SkeletonTrackingState.Tracked
-                                  select s).FirstOrDefault();
-
-                return first;
-
-            }
-        }
+        
 
 
         private void StopKinect(KinectSensor sensor)
