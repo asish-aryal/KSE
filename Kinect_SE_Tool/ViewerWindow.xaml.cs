@@ -175,7 +175,7 @@ namespace Kinect_SE_Tool
 
         public void zoom_in()
         {
-            zoom_in(1.05);
+            zoom_in(1.02);
         }
 
         public void zoom_in(double factor)
@@ -222,7 +222,7 @@ namespace Kinect_SE_Tool
         }
 
         public void zoom_out()
-        { zoom_out(1.05); }
+        { zoom_out(1.02); }
 
         public void zoom_out(double factor)
         {

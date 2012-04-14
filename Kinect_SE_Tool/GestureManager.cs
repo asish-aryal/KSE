@@ -5,7 +5,8 @@ using System.Text;
 using Microsoft.Kinect;
 using System.Windows;
 using System.Windows.Controls;
-using Coding4Fun.Kinect.Wpf; 
+using Coding4Fun.Kinect.Wpf;
+using System.Threading;
 
 namespace Kinect_SE_Tool
 {
@@ -50,27 +51,32 @@ namespace Kinect_SE_Tool
 
         private void recogniseGestures()
         {
-            //if (historyManager.getJointHistory(JointType.HandRight).Equals(historyManager.getJointHistory(JointType.HandRight)[itemsInHistory - 1]))
-            //{MessageBox.Show("All the items in the array refer to the same joint!");}
-            checkZoomGesture();
             
+            checkZoomGesture();
         }
 
         private void checkZoomGesture()
         {
-            double initial_position = historyManager.getJoint(JointType.HandLeft, 0.5).Position.Z;
+            double initial_position = historyManager.getJoint(JointType.HandLeft, 0.3).Position.Z;
             double final_position = historyManager.getJoint(JointType.HandLeft, 0).Position.Z;
             double diff = final_position - initial_position;
-            vWindow.speech_feedback_value.Text = diff.ToString();
+            //vWindow.speech_feedback_value.Text = diff.ToString();
             if (diff >= 0.25)
             {
-                vWindow.zoom_in(1.5);
-                historyManager.clearHistory();
+                
+
+                        vWindow.zoom_in(1.04);
+
+                
+                //vWindow.zoom_in(1.5);
+                //Thread.Sleep(1000);
+                //historyManager.clearHistory();
             }
             else if (diff <= -0.25)
             {
-                vWindow.zoom_out(1.6);
-                historyManager.clearHistory();
+                vWindow.zoom_out(1.04);
+                //Thread.Sleep(1000);
+                //historyManager.clearHistory();
             }
         
         }

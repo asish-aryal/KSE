@@ -41,7 +41,8 @@ namespace Kinect_SE_Tool
             createDictionary();
         }
 
-        private void createDictionary()
+        
+        private void  createDictionary()
         { 
             jointHistoryList.Add(JointType.Head, head);
 

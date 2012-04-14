@@ -77,7 +77,61 @@ namespace Kinect_SE_Tool
             return points_in_a_page[nth_item];
         }
 
-        public void recalcuate (int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items)
+
+        //items always appear from the top-left position of the canvas
+        public void recalcuate1(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items)
+        {
+            points_in_a_page = new PointCollection();
+            List<PointCollection> pages = new List<PointCollection>();
+            int vertical_separation = get_separation_distance(item_height, Canvas_Height);
+            int horizontal_separation = get_separation_distance(item_width, Canvas_Width);
+
+            List<int> distances_in_x = new List<int>();
+            int cur_dist_x = 15;
+            
+            while ((cur_dist_x + horizontal_separation + item_width) < Canvas_Width)
+            {
+                distances_in_x.Add(cur_dist_x);
+                cur_dist_x += horizontal_separation + item_width;
+            }
+
+            List<int> distances_in_y = new List<int>();
+            int cur_dist_y = 15;
+
+            while ((cur_dist_y + vertical_separation + item_height) < Canvas_Height)
+            {
+                distances_in_y.Add(cur_dist_y);
+                cur_dist_y += vertical_separation + item_height;
+            }
+
+            for (int i = 0; i < distances_in_y.Count; i++)
+            {
+                for (int j = 0; j < distances_in_x.Count; j++)
+                { 
+                    points_in_a_page.Add(new Point((double)distances_in_x[j],(double)distances_in_y[i]));
+                }
+            }
+
+            if ((no_of_items % points_in_a_page.Count) == 0)
+            { total_pages = no_of_items / points_in_a_page.Count; }
+            else
+            { total_pages = (no_of_items / points_in_a_page.Count) + 1; }
+
+            if ((selected_element % points_in_a_page.Count) == 0)
+            { current_page = selected_element / points_in_a_page.Count; }
+            else
+            {
+                current_page = selected_element / points_in_a_page.Count + 1;
+            }
+
+            
+            items_per_row = distances_in_x.Count;
+            items_per_column = distances_in_y.Count;
+            items_per_page = items_per_column * items_per_row;
+        }
+
+        //items always centered in the canvas
+        public void recalcuate(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items)
         {
             points_in_a_page = new PointCollection();
             List<PointCollection> pages = new List<PointCollection>();

@@ -206,7 +206,7 @@ namespace Kinect_SE_Tool
                     Smoothing = 0.3f,
                     Correction = 0.0f,
                     Prediction = 0.0f,
-                    JitterRadius = 0.9f,
+                    JitterRadius = 0.2f,
                     MaxDeviationRadius = 0.5f
                 };
                 kinect_sensor.SkeletonStream.Enable(parameters);
