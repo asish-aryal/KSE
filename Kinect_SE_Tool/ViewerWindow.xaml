@@ -37,16 +37,16 @@
             <TextBlock Name="skeleton_mask" VerticalAlignment="Bottom" Background="#FFFFFF" Height="30" Width="320" FontSize="20" TextAlignment="Center" Margin="0,0,0,480" Focusable="False" >Camera Turned Off</TextBlock>
             
             <Image Height="240" Name="color_view" VerticalAlignment="Bottom" Width="320" Margin="0,0,0,0" Focusable="False" />
-            <my:KinectColorViewer Name="color_viewer" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,380" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" Focusable="False" />
-            <my:KinectSkeletonViewer Name="kinectSkeletonViewer" VerticalAlignment="Bottom" Height="240" Width="320" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" ClipToBounds="True" Margin="0,0,0,380" Focusable="False" />
-            <TextBlock Name="speech_suggestion_label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,305" Background="#000000" Height="35" Width="320" FontSize="24" TextAlignment="Left" Foreground="White" TextWrapping="Wrap" Focusable="False" >Say one of the following:</TextBlock>
-            <TextBlock Name="speech_suggestion_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,50" Background="#D4D4D4" Height="255" Width="320" FontSize="30" TextAlignment="Right" Foreground="Black" TextWrapping="Wrap" Focusable="False" Padding="10"></TextBlock>
+            <my:KinectColorViewer Name="color_viewer" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,355" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" Focusable="False" />
+            <my:KinectSkeletonViewer Name="kinectSkeletonViewer" VerticalAlignment="Bottom" Height="240" Width="320" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" ClipToBounds="True" Margin="0,0,0,355" Focusable="False" />
+            <TextBlock Name="speech_suggestion_label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,299" Background="#000000" Height="52" Width="320" FontSize="24" TextAlignment="Left" Foreground="White" TextWrapping="Wrap" Focusable="False" Padding="10">Available Voice Commands:</TextBlock>
+            <TextBlock Name="speech_suggestion_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,50" Background="#D4D4D4" Height="249" Width="320" FontSize="30" TextAlignment="Right" Foreground="Black" TextWrapping="Wrap" Focusable="False" Padding="10"></TextBlock>
             <Button Height="40" Width="120" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" FontSize="16" Name="help" Content="Help" />
             <!--<TextBlock Name="Status_Label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#000000" Height="45" Width="80" FontSize="24" TextAlignment="Center" Foreground="White" TextWrapping="Wrap" Focusable="False" >Status</TextBlock>-->
             <Image Source="/Kinect_SE_Tool;component/Resources/images/gesture_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Name="gesture_status" />
-            <Image Source="/Kinect_SE_Tool;component/Resources/images/mic_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
+            <Image Source="/Kinect_SE_Tool;component/Resources/images/mic_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
             <!--<TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Focusable="False" Visibility="Hidden"></TextBlock>-->
-            <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,380" Focusable="False"  />
+            <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,355" Focusable="False"  />
         </Grid>
         
     </Grid>

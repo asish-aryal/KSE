@@ -68,6 +68,8 @@ namespace Kinect_SE_Tool
 
         }
 
+        
+
         private class EnergyCalculatingPassThroughStream : Stream
         {
             private const int SamplesPerPixel = 10;

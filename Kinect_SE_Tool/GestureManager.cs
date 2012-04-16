@@ -19,8 +19,7 @@ namespace Kinect_SE_Tool
         private Skeleton[] allSkeletons = new Skeleton[skeletonCount];
         //private List<Joint> rightHandPositions;
 
-        //in seconds
-        int historyDuration = 2;
+        int historyDuration = 2; //in seconds
         private SkeletonHistoryManager historyManager;
         //private bool zooming_in = false;
 

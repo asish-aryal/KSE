@@ -26,6 +26,7 @@ namespace Kinect_SE_Tool
         private Controller controller;
         private int current_item_width;
         private Package_ current_package;
+        private bool browse_dialogue_displayed = false;
         private bool doc_loaded = false;
         private static bool isInstantiated = false;
         private ItemLocationManager item_location_manager;
@@ -134,15 +135,25 @@ namespace Kinect_SE_Tool
 
         public void load_root_package()
         {
-            Package_ temp = controller.get_package();
+            Package_ temp = null;
+            if (browse_dialogue_displayed == false)
+            {
+                browse_dialogue_displayed = true;
+                temp = controller.get_package();
+                browse_dialogue_displayed = false;
+            }
             if (temp != null)
             {
                 root = temp;
                 current_package = root;
                 doc_loaded = true;
                 current_item_width = min_zoom;
+                repaint();
+                
+                
+                
             }
-            repaint();
+            
         }
 
         public void move_selection_down()
@@ -203,7 +214,18 @@ namespace Kinect_SE_Tool
 
                 repaint();
             }
-            else if ((item_location_manager.ITEMS_PER_PAGE == 1) && (current_package.Children_Packages.Count >= item_location_manager.CURRENT_PAGE))
+            else if ((proposed_zoom > max_zoom_width) && (proposed_zoom*aspect_ratio <= max_zoom_height) && (isClassifier(item_location_manager.SELECTED_ITEM)))
+            {
+                current_item_width = max_zoom_width;
+                repaint();
+            }
+            else if ((proposed_zoom <= max_zoom_width) && (proposed_zoom * aspect_ratio > max_zoom_height) && (isClassifier(item_location_manager.SELECTED_ITEM)))
+            {
+                current_item_width = (int)((max_zoom_height) / aspect_ratio);
+                repaint();
+            }
+
+            else if ((item_location_manager.ITEMS_PER_PAGE == 1) && (isPackage(item_location_manager.SELECTED_ITEM)))
             {
                 current_package = current_package.Children_Packages[item_location_manager.CURRENT_PAGE - 1];
                 current_item_width = min_zoom;
@@ -271,7 +293,7 @@ namespace Kinect_SE_Tool
                 current_item_width = proposed_zoom;
                 repaint();
             }
-            else if (proposed_zoom < min_zoom)
+            else if (proposed_zoom <= min_zoom)
             {
                 current_item_width = min_zoom;
                 repaint();
@@ -641,8 +663,39 @@ namespace Kinect_SE_Tool
                 max_zoom_height = (int)main_view.ActualHeight - 50;
                 main_view.Children.Clear();
                 draw_diagrams();
+
+                if (kinectSensorChooser.Kinect != null)
+                {
+                    speech_suggestion_value.Inlines.Clear();
+                    if ((!isClassifier(item_location_manager.SELECTED_ITEM)) || (!((max_zoom_width == current_item_width) || ((max_zoom_height - current_item_width * aspect_ratio) <= 2))))
+                    { speech_suggestion_value.Inlines.Add("Zoom in" + Environment.NewLine); }
+                    if ((current_package.Name.ToUpper() != "ROOT") || (current_item_width != min_zoom))
+                    { speech_suggestion_value.Inlines.Add("Zoom out" + Environment.NewLine); }
+                    if (item_location_manager.CURRENT_PAGE < item_location_manager.TOTAL_PAGES)
+                    { speech_suggestion_value.Inlines.Add("Next Page" + Environment.NewLine); }
+                    if (item_location_manager.CURRENT_PAGE > 1)
+                    { speech_suggestion_value.Inlines.Add("Previous Page" + Environment.NewLine); }
+                }
             }
         }
+
+        private bool isClassifier(int item_number)
+        {
+            if ((item_number > current_package.Children_Packages.Count) && (item_number > 0))
+            { return true; }
+            else
+            { return false; }
+        
+        }
+
+        private bool isPackage(int item_number)
+        {
+            if ((item_number <= current_package.Children_Packages.Count) && (item_number > 0))
+            { return true; }
+            else
+            { return false; }
+        }
+
 
         private void set_item_positions(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items )
         {
