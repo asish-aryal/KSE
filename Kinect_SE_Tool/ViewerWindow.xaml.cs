@@ -53,6 +53,7 @@ namespace Kinect_SE_Tool
             min_zoom = 150;
             doc_loaded = false;
             initialise_pointers();
+            
 
         }
 
@@ -62,21 +63,31 @@ namespace Kinect_SE_Tool
 
 		// Public Methods (16) 
 
+        private void display_speech_suggestions()
+        {
+            
+            speech_suggestion_value.Inlines.Add("Browse");
+            
+        }
+
         private void initialise_pointers()
         {
             pointer_right = new Ellipse();
-            pointer_left = new Ellipse();
-            pointer_right.Width = pointer_left.Width = 20;
-            pointer_right.Height = pointer_left.Height = 20;
+            //pointer_left = new Ellipse();
+            pointer_right.Width = 20;
+            //pointer_left.Width = 20;
+            pointer_right.Height = 20;
+            //pointer_left.Height = 20;
             pointer_right.Fill = Brushes.Green;
-            pointer_left.Fill = Brushes.Blue;
-            pointer_right.Opacity = pointer_left.Opacity = 0.5;
+            //pointer_left.Fill = Brushes.Blue;
+            pointer_right.Opacity = 0.5;
+            //pointer_left.Opacity = 0.5;
             Canvas.SetRight(pointer_right, 0);
-            Canvas.SetLeft(pointer_left, 0);
+            //Canvas.SetLeft(pointer_left, 0);
             Canvas.SetBottom(pointer_right, 0);
-            Canvas.SetBottom(pointer_left, 0);
+            //Canvas.SetBottom(pointer_left, 0);
             main_view.Children.Add(pointer_right);
-            main_view.Children.Add(pointer_left);
+            //main_view.Children.Add(pointer_left);
             Canvas.SetZIndex(this.pointer_right, 2);
             //pointer.Visibility = Visibility.Hidden;
             
@@ -88,11 +99,14 @@ namespace Kinect_SE_Tool
         public Image get_image_frame()
         { return color_view; }
 
-        public TextBlock get_speech_block()
-        { return speech_feedback_value; }
+        public TextBlock get_speech_suggestion_block()
+        { return speech_suggestion_value; }
 
-        public TextBlock get_status_block()
-        { return Status_Value; }
+        public Image get_speech_status_icon()
+        { return speech_status; }
+
+        public Image get_gesture_status_icon()
+        { return gesture_status; }
 
         public Ellipse get_pointer_right()
         { return pointer_right; }
@@ -267,10 +281,6 @@ namespace Kinect_SE_Tool
         }
 		// Private Methods (24) 
 
-        private void browse_for_file(object sender, RoutedEventArgs e)
-        {
-            load_root_package();
-        }
 
         private void draw_box(double top_left_X, double top_left_Y, double width, double height, Brush brush, Boolean fill)
         {
@@ -439,7 +449,7 @@ namespace Kinect_SE_Tool
 
 
             main_view.Children.Add(pointer_right);
-            main_view.Children.Add(pointer_left);
+            //main_view.Children.Add(pointer_left);
 
             page_info.Content = "Page " + item_location_manager.CURRENT_PAGE + " of " + item_location_manager.TOTAL_PAGES; ;
             depth_info.Content = "Package depth:   " + get_package_heirarchy(current_package); ;
@@ -562,7 +572,7 @@ namespace Kinect_SE_Tool
                 else if (e.Key == Key.D)
                 { move_selection_right(); }
 
-                Keyboard.Focus(zoom_out_button);
+                Keyboard.Focus(help);
 
             }
         }
@@ -679,7 +689,7 @@ namespace Kinect_SE_Tool
         private void Window_Closing(object sender, EventArgs e)
         {
             isInstantiated = false;
-            kinectHandler.StopKinect();
+            //kinectHandler.StopKinect();
             MainWindow window = new MainWindow();
             window.Show();
         }
@@ -688,7 +698,8 @@ namespace Kinect_SE_Tool
         {
             kinectHandler = new KinectHandler();
             kinectHandler.start();
-            Keyboard.Focus(zoom_out_button);
+            
+            Keyboard.Focus(help);
             
         }
 

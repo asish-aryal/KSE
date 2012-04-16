@@ -23,8 +23,8 @@ namespace Kinect_SE_Tool
         private SpeechRecognitionEngine speechRecognizer;
         private EnergyCalculatingPassThroughStream stream;
         private DispatcherTimer readyTimer;
-        private TextBlock speech_block;
-        private TextBlock status_block;
+        private TextBlock speech_suggestion_block;
+        private Image speech_status_icon;
         KinectColorViewer color_viewer;
 
         private GestureManager gManager;
@@ -34,8 +34,8 @@ namespace Kinect_SE_Tool
         public KinectHandler()
         { 
            vWindow = ViewerWindow.getInstance();
-           speech_block = vWindow.get_speech_block();
-           status_block = vWindow.get_status_block();
+           speech_suggestion_block = vWindow.get_speech_suggestion_block();
+           speech_status_icon = vWindow.get_speech_status_icon();
            Image color_view = vWindow.get_image_frame();
            color_viewer = vWindow.get_color_viewer();
            gManager = new GestureManager(_sensor);
@@ -45,20 +45,27 @@ namespace Kinect_SE_Tool
         public void start()
         {
 
+            vWindow.kinectSensorChooser.KinectSensorChanged += new DependencyPropertyChangedEventHandler(kinectSensorChooser_KinectSensorChanged);
+            
+        }
 
+        void kinectSensorChooser_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            KinectSensor oldSensor = (KinectSensor)e.OldValue;
+            StopKinect(oldSensor);
 
-            if (KinectSensor.KinectSensors.Count > 0)
-            { _sensor = KinectSensor.KinectSensors[0]; }
+            if ((KinectSensor)e.NewValue != null)
+            {
+                _sensor = (KinectSensor)e.NewValue;
+                initializeKinect(_sensor);
+                speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_ready.png", UriKind.Relative));
+            }
             else
             {
-                status_block.Text = "Kinect not connected :(";
-                return; 
+                speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_not_ready.png", UriKind.Relative));
             }
-            initializeKinect(_sensor);
 
 
-
-            
         }
 
         private class EnergyCalculatingPassThroughStream : Stream
@@ -181,18 +188,7 @@ namespace Kinect_SE_Tool
             }
         }
 
-        void sensor_chooser_KinectSensorChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            KinectSensor oldSensor = (KinectSensor)e.OldValue;
-            StopKinect(oldSensor);
 
-            if ((KinectSensor)e.NewValue != null)
-            {
-                _sensor = (KinectSensor)e.NewValue;
-                initializeKinect(_sensor);
-            }
-            //throw new NotImplementedException();
-        }
 
 
 
@@ -240,8 +236,8 @@ namespace Kinect_SE_Tool
                     this.readyTimer.Tick += this.ReadyTimerTick;
                     this.readyTimer.Interval = new TimeSpan(0, 0, 4);
                     this.readyTimer.Start();
-
-                    status_block.Text = "Hold on... I'm getting ready";
+                    speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_waiting.png", UriKind.Relative));
+                    //status_block.Text = "Hold on... I'm getting ready";
                     //this.UpdateInstructionsText(string.Empty);
 
                     //this.Closing += this.MainWindowClosing;
@@ -253,7 +249,8 @@ namespace Kinect_SE_Tool
         private void ReadyTimerTick(object sender, EventArgs e)
         {
             //this.Start();
-            status_block.Text = "Alright, Hit Me!";
+            speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_ready.png", UriKind.Relative));
+            //status_block.Text = "Alright, Hit Me!";
             
             this.readyTimer.Stop();
             this.readyTimer = null;
@@ -351,71 +348,36 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
             return;
         }
 
-        speech_block.Text = e.Result.Text;
-
         switch (e.Result.Text.ToUpperInvariant())
         {
-            case "RED":
-                speech_block.Background = Brushes.Red;
-                break;
-            case "GREEN":
-                speech_block.Background = Brushes.Green;
-                //brush = this.greenBrush;
-                break;
-            case "BLUE":
-                speech_block.Background = Brushes.Blue;
-                //brush = this.blueBrush;
-                break;
             case "CAMERA ON":
                 color_viewer.Visibility = Visibility.Visible;
                 //System.Diagnostics.Process.Start("notepad.exe");
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Visible;
-                //brush = this.blackBrush;
                 break;
             case "CAMERA OFF":
                 color_viewer.Visibility = Visibility.Hidden;
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Hidden;
-                //brush = this.blackBrush;
                 break;
             case "ZOOM IN":
                 vWindow.zoom_in(2);
-                //System.Diagnostics.Process.Start("notepad.exe");
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Visible;
-                //brush = this.blackBrush;
                 break;
             case "ZOOM OUT":
                 vWindow.zoom_out(1.8);
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Hidden;
-                //brush = this.blackBrush;
                 break;
             case "NEXT PAGE":
                 vWindow.next_page();
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Hidden;
-                //brush = this.blackBrush;
                 break;
             case "PREVIOUS PAGE":
                 vWindow.previous_page();
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Hidden;
-                //brush = this.blackBrush;
                 break;
             case "I KILL YOU":
                 vWindow.Close();
-                //this.kinectColorViewer1.Visibility = System.Windows.Visibility.Hidden;
-                //brush = this.blackBrush;
                 break;
             case "BROWSE":
                 vWindow.load_root_package();
                 break;
-            case "DEFAULT":
-                speech_block.Background = Brushes.LightGray;
-                break;
             default:
-                //brush = this.blackBrush;
                 break;
         }
-
-        
-        //MessageBox.Show("Recognized: " + e.Result.Text + " " + e.Result.Confidence);
     }
         private static RecognizerInfo GetKinectRecognizer()
         {
@@ -432,13 +394,6 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
         private void _sensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
             gManager.processFrames(e);
-
-            //if (closing)
-            //{
-            //    return;
-            //}
-
-            //Get a skeleton
             
         }
 
@@ -452,14 +407,14 @@ Ensure you have the Microsoft Speech SDK installed and configured.",
             
             if (sensor != null)
             {
-                sensor.Stop();
-                sensor.AudioSource.Stop();
+                    sensor.Stop();
+                    sensor.AudioSource.Stop();                
             }
         }
 
         public void StopKinect()
         {
-            //StopKinect(_sensor);
+            StopKinect(vWindow.kinectSensorChooser.Kinect);
         }
 
     }

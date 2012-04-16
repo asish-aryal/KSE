@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -74,6 +75,7 @@
     <Compile Include="Interface_.cs" />
     <Compile Include="ItemLocationManager.cs" />
     <Compile Include="KinectHandler.cs" />
+    <Compile Include="KinectStateManager.cs" />
     <Compile Include="Method_.cs" />
     <Compile Include="Package_.cs" />
     <Compile Include="SkeletonHistoryManager.cs" />
@@ -139,13 +141,55 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="kinect.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\KExplorer\C#\KinectWpfViewers\Microsoft.Samples.Kinect.WpfViewers.csproj">
       <Project>{4DE23893-27E7-423F-9BB6-BA21DAC2C45E}</Project>
       <Name>Microsoft.Samples.Kinect.WpfViewers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\checkmark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\gesture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\gesture_not_ready.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\gesture_ready.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\gesture_waiting.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\gesture1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\kinect.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\mic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\mic_not_ready.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\mic_ready.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\mic_waiting.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\waiting.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\waiting1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

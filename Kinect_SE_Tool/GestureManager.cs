@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Kinect;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using Coding4Fun.Kinect.Wpf;
 using System.Threading;
 
@@ -39,13 +40,21 @@ namespace Kinect_SE_Tool
         public void processFrames(AllFramesReadyEventArgs e)
         {
             Skeleton first = GetFirstSkeleton(e);
-            if (first == null || (vWindow.get_pointer_right() == null)) return;
+            if (first == null)
+            {
+                vWindow.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_not_ready.png", UriKind.Relative));
+                return;
+            }
+
+            vWindow.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_ready.png", UriKind.Relative));
             update_pointer(first);
 
             historyManager.addToHistory(first);
 
             if (historyManager.IsReady)
             { recogniseGestures(); }
+            else
+            { vWindow.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_waiting.png", UriKind.Relative)); }
         }
 
 

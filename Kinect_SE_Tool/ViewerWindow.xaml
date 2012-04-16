@@ -13,14 +13,14 @@
             <RowDefinition />
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">JavaDoc Explorer</TextBlock>
-        <Canvas Grid.Column="0" Grid.Row="1"  Name="main_view"  MinHeight="417" MinWidth="650"  Focusable="False" IsManipulationEnabled="False" Background="#DBD4D4D4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,0,0" ClipToBounds="True"></Canvas>
+        <TextBlock Grid.Column="0" Name="window_title" Grid.Row="0" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="True">JavaDoc Explorer</TextBlock>
+        <Canvas Grid.Column="0" Grid.Row="1"  Name="main_view"  MinHeight="417" MinWidth="650" IsManipulationEnabled="False" Background="#DBD4D4D4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,0,0" ClipToBounds="True"></Canvas>
         <Label Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,340,0" Content="Page" Height="28" HorizontalAlignment="Right" Name="page_info" Width="151" />
         <Label Grid.Row="2" Grid.ColumnSpan="2" Margin="10,0,0,0" Content="Depth:" Height="28" HorizontalAlignment="Left" Name="depth_info" Width="750" />
 
 
         <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" MinWidth="320" Margin="10,0,10,0"  Focusable="False">
-            <Grid MinHeight="240" VerticalAlignment="Top"  Focusable="False">
+            <!--<Grid MinHeight="240" VerticalAlignment="Top"  Focusable="False">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition />
@@ -33,21 +33,20 @@
                 <TextBlock FontSize="28" Grid.Row="0" Grid.Column="0">Controls</TextBlock>
                 <TextBlock FontSize="20"  Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">Get Javadoc</TextBlock>
                 <TextBlock FontSize="20"  Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">Zoom</TextBlock>
-                <Button Content="Browse..." Grid.Row="1" Grid.Column="1" Height="40" Name="button1" VerticalAlignment="Center" Width="155" FontSize="18" Click="browse_for_file" Focusable="False" />
-                <Button Content="-" Grid.Row="2" Grid.Column="1" Height="40" HorizontalAlignment="Left" Margin="15,0,0,0" Name="zoom_out_button" VerticalAlignment="Center" Width="50" Click="zoom_out_Click" FontSize="18" />
-                <Button Content="+" Grid.Row="2" Grid.Column="1" Height="40" HorizontalAlignment="Right" Name="zoom_in_button" VerticalAlignment="Center" Margin="0,0,15,0" Width="50" Click="zoom_in_Click" Focusable="False" FontSize="18" />
-
-            </Grid>
-            <TextBlock Name="skeleton_mask" VerticalAlignment="Bottom" Background="#FFFFFF" Height="30" Width="320" FontSize="20" TextAlignment="Center" Margin="0,0,0,380" Focusable="False" >Camera Turned Off</TextBlock>
+            </Grid>-->
+            <TextBlock Name="skeleton_mask" VerticalAlignment="Bottom" Background="#FFFFFF" Height="30" Width="320" FontSize="20" TextAlignment="Center" Margin="0,0,0,480" Focusable="False" >Camera Turned Off</TextBlock>
             
             <Image Height="240" Name="color_view" VerticalAlignment="Bottom" Width="320" Margin="0,0,0,0" Focusable="False" />
-            <my:KinectColorViewer Name="color_viewer" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,252" Kinect="{Binding ElementName=kinectSensorChooser2, Path=Kinect}" Focusable="False" />
-            <my:KinectSkeletonViewer Name="kinectSkeletonViewer1" VerticalAlignment="Bottom" Height="240" Width="320" Kinect="{Binding ElementName=kinectSensorChooser2, Path=Kinect}" ClipToBounds="True" Margin="0,0,0,252" Focusable="False" />
-            <TextBlock Name="speech_feedback_label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,205" Background="#000000" Height="35" Width="320" FontSize="24" TextAlignment="Left" Foreground="White" TextWrapping="Wrap" Focusable="False" >Speech Feedback:</TextBlock>
-            <TextBlock Name="speech_feedback_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,40" Background="#D4D4D4" Height="165" Width="320" FontSize="60" TextAlignment="Center" Foreground="Black" TextWrapping="Wrap" Focusable="False" ></TextBlock>
-            <TextBlock Name="Status_Label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#000000" Height="35" Width="80" FontSize="24" TextAlignment="Center" Foreground="White" TextWrapping="Wrap" Focusable="False" >Status</TextBlock>
-            <TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Focusable="False" ></TextBlock>
-            <my:KinectSensorChooser  Name="kinectSensorChooser2" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,252" Focusable="False"  />
+            <my:KinectColorViewer Name="color_viewer" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,380" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" Focusable="False" />
+            <my:KinectSkeletonViewer Name="kinectSkeletonViewer" VerticalAlignment="Bottom" Height="240" Width="320" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" ClipToBounds="True" Margin="0,0,0,380" Focusable="False" />
+            <TextBlock Name="speech_suggestion_label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,305" Background="#000000" Height="35" Width="320" FontSize="24" TextAlignment="Left" Foreground="White" TextWrapping="Wrap" Focusable="False" >Say one of the following:</TextBlock>
+            <TextBlock Name="speech_suggestion_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,50" Background="#D4D4D4" Height="255" Width="320" FontSize="30" TextAlignment="Right" Foreground="Black" TextWrapping="Wrap" Focusable="False" Padding="10"></TextBlock>
+            <Button Height="40" Width="120" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" FontSize="16" Name="help" Content="Help" />
+            <!--<TextBlock Name="Status_Label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#000000" Height="45" Width="80" FontSize="24" TextAlignment="Center" Foreground="White" TextWrapping="Wrap" Focusable="False" >Status</TextBlock>-->
+            <Image Source="/Kinect_SE_Tool;component/Resources/images/gesture_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Name="gesture_status" />
+            <Image Source="/Kinect_SE_Tool;component/Resources/images/mic_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
+            <!--<TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Focusable="False" Visibility="Hidden"></TextBlock>-->
+            <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,380" Focusable="False"  />
         </Grid>
         
     </Grid>
