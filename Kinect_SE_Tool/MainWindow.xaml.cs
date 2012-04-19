@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

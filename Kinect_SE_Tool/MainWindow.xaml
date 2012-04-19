@@ -1,4 +1,4 @@
-﻿<Window x:Class="Kinect_SE_Tool.MainWindow"
+﻿<Window x:Class="Kinect_Explorer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="HomeWindow" Height="720" Width="1280" MaxHeight="720" MaxWidth="1280" MinHeight="720" MinWidth="1280" WindowStartupLocation="CenterScreen">

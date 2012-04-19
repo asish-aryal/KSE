@@ -8,8 +8,8 @@
     <ProjectGuid>{8D0ED6E7-5BFE-414B-81AB-6E855E455A66}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kinect_SE_Tool</RootNamespace>
-    <AssemblyName>Kinect_SE_Tool</AssemblyName>
+    <RootNamespace>Kinect_Explorer</RootNamespace>
+    <AssemblyName>Kinect Explorer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Kinect_SE_Tool.App</StartupObject>
+    <StartupObject>Kinect_Explorer.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Coding4Fun.Kinect.Wpf">

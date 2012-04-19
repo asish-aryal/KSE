@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Kinect;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     class SkeletonHistoryManager
     {

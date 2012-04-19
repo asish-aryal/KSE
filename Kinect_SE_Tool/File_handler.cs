@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     class File_handler
     {

@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 using System.Threading;
 using Microsoft.Kinect;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     /// <summary>
     /// Interaction logic for TempWindow.xaml
@@ -38,7 +38,7 @@ namespace Kinect_SE_Tool
         private static ViewerWindow viewer_window;
         private Ellipse pointer_right;
         private Ellipse pointer_left;
-        private Brush selection_color = Brushes.White;
+        private Brush selection_color;
 
 		#endregion Fields 
 
@@ -53,6 +53,7 @@ namespace Kinect_SE_Tool
             current_item_width = 150;
             min_zoom = 150;
             doc_loaded = false;
+            selection_color = Brushes.Beige;
             initialise_pointers();
             
 
@@ -447,15 +448,18 @@ namespace Kinect_SE_Tool
             Point current_point;
             for (int i = 0; i < (no_of_classifiers + no_of_packages); i++)
             {
+                //calculation to check if i points to an item in the current page
                 if ((i >= (item_location_manager.CURRENT_PAGE - 1) * item_location_manager.ITEMS_PER_PAGE) && (i < item_location_manager.CURRENT_PAGE * item_location_manager.ITEMS_PER_PAGE))
                 {
                     current_point = item_location_manager.get_point(i + 1);
 
+                    //draw the selection outline
                     if ((i+1) == item_location_manager.SELECTED_ITEM)
                     {
-                        draw_box(current_point.X - current_item_width/20, current_point.Y - current_item_width/20, current_item_width + current_item_width/10, current_item_width * aspect_ratio + current_item_width/10, selection_color, true);
+                        draw_box(current_point.X - current_item_width/30, current_point.Y - current_item_width/30, current_item_width + current_item_width/15, current_item_width * aspect_ratio + current_item_width/15, selection_color, true);
                     }
 
+                    //draw the diagram of item pointed to by the pointer (package or class)
                     if (i < no_of_packages)
                     { draw_package(current_point.X, current_point.Y, packages[i].Name, current_item_width); }
                     else if ((i - no_of_packages) < no_of_classifiers)
@@ -743,8 +747,8 @@ namespace Kinect_SE_Tool
         {
             isInstantiated = false;
             //kinectHandler.StopKinect();
-            MainWindow window = new MainWindow();
-            window.Show();
+            //MainWindow window = new MainWindow();
+            //window.Show();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

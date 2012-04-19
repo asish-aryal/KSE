@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using Coding4Fun.Kinect.Wpf;
 using System.Threading;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     class GestureManager
     {

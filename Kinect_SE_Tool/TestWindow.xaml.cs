@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     /// <summary>
     /// Interaction logic for TestWindow.xaml

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinect_SE_Tool", "Kinect_SE_Tool\Kinect_SE_Tool.csproj", "{8D0ED6E7-5BFE-414B-81AB-6E855E455A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinect_Explorer", "Kinect_SE_Tool\Kinect_Explorer.csproj", "{8D0ED6E7-5BFE-414B-81AB-6E855E455A66}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C95B2F08-4355-4E40-BB7D-A8515A8369AB}"
 	ProjectSection(SolutionItems) = preProject

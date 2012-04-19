@@ -5,10 +5,25 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Controls;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
+    enum Gestures
+    { 
+        ZoomIn, ZoomOut, MovePointer
+    }
+
+    enum ApplicationStates
+    { 
+        SoftwareLoaded, SoftwareNotLoaded, KinectConnected, KinectNotConnected, BrowseDialogueOpen, BrowseDialogueNotOpen
+    }
+
+    enum ZoomStates
+    { 
+        maximumZoomReached, minimumZoomReached, zoomingAllowed
+    }
     class Controller
     {
+
 
         public Controller()
         {
@@ -31,10 +46,12 @@ namespace Kinect_SE_Tool
             {
                 return null;
             }
-            
         }
 
+        public void processGesture(Gestures gesture)
+        {
 
+        }
 
 
 

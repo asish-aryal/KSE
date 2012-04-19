@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     public class Classifier_
     {

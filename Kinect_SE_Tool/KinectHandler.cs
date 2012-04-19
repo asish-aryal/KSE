@@ -14,7 +14,7 @@ using Microsoft.Samples.Kinect.WpfViewers;
 using Coding4Fun.Kinect.Wpf; 
 using System.Windows.Threading;
 
-namespace Kinect_SE_Tool
+namespace Kinect_Explorer
 {
     class KinectHandler
     {
