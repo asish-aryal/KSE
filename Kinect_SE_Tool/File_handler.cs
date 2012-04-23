@@ -74,10 +74,10 @@ namespace Kinect_Explorer
         {
             Classifier_ classifier;
             if (node.Name.ToUpper() == "CLASS")
-            { classifier = new Class_(node.Attributes["name"].Value);}
+            { classifier = new Classifier_(node.Attributes["name"].Value, ClassifierType.CLASS);}
             
             else if (node.Name.ToUpper() == "INTERFACE")
-            {  classifier = new Interface_(node.Attributes["name"].Value);}
+            {  classifier = new Classifier_(node.Attributes["name"].Value, ClassifierType.INTERFACE);}
             else
             {  return null;}
 

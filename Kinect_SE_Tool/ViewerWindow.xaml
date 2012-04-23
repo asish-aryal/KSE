@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 Title="Kinect Explorer" Height="720" Width="1280" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" xmlns:my="clr-namespace:Microsoft.Samples.Kinect.WpfViewers;assembly=Microsoft.Samples.Kinect.WpfViewers" Closing="Window_Closing" WindowState="Maximized" MinHeight="768" MinWidth="1024" SizeChanged="Window_SizeChanged">
 
-    <Grid KeyDown="keyboard_input">
+    <Grid KeyDown="KeyboardInput" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="340" />
@@ -38,7 +38,7 @@
             </Grid>-->
             <TextBlock Name="skeleton_mask" VerticalAlignment="Bottom" Background="#FFFFFF" Height="30" Width="320" FontSize="20" TextAlignment="Center" Margin="0,0,0,480" Focusable="False" >Camera Turned Off</TextBlock>
             
-            <Image Height="240" Name="color_view" VerticalAlignment="Bottom" Width="320" Margin="0,0,0,0" Focusable="False" />
+            <!--<Image Height="240" Name="color_view" VerticalAlignment="Bottom" Width="320" Margin="0,0,0,0" Focusable="False" />-->
             <my:KinectColorViewer Name="color_viewer" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,355" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" Focusable="False" />
             <my:KinectSkeletonViewer Name="kinectSkeletonViewer" VerticalAlignment="Bottom" Height="240" Width="320" Kinect="{Binding ElementName=kinectSensorChooser, Path=Kinect}" ClipToBounds="True" Margin="0,0,0,355" Focusable="False" />
             <TextBlock Name="speech_suggestion_label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,299" Background="#000000" Height="52" Width="320" FontSize="24" TextAlignment="Left" Foreground="White" TextWrapping="Wrap" Focusable="False" Padding="10">Available Voice Commands:</TextBlock>
@@ -48,7 +48,7 @@
             <Image Source="/Kinect_SE_Tool;component/Resources/images/gesture_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Name="gesture_status" />
             <Image Source="/Kinect_SE_Tool;component/Resources/images/mic_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
             <!--<TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Focusable="False" Visibility="Hidden"></TextBlock>-->
-            <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" KinectSensorChanged="kinectSensorChooser2_KinectSensorChanged" Margin="0,0,0,355" Focusable="False"  />
+            <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,355" Focusable="False"  />
         </Grid>
         
     </Grid>

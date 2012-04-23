@@ -27,8 +27,8 @@ namespace Kinect_Explorer
 
         private void begin_Click(object sender, RoutedEventArgs e)
         {
-            ViewerWindow window = ViewerWindow.getInstance();
-            window.Show();
+            
+            ViewManager vManager = ViewManager.getInstance();
             this.Close();
 
         }

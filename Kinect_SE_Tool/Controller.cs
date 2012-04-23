@@ -7,20 +7,7 @@ using System.Windows.Controls;
 
 namespace Kinect_Explorer
 {
-    enum Gestures
-    { 
-        ZoomIn, ZoomOut, MovePointer
-    }
 
-    enum ApplicationStates
-    { 
-        SoftwareLoaded, SoftwareNotLoaded, KinectConnected, KinectNotConnected, BrowseDialogueOpen, BrowseDialogueNotOpen
-    }
-
-    enum ZoomStates
-    { 
-        maximumZoomReached, minimumZoomReached, zoomingAllowed
-    }
     class Controller
     {
 

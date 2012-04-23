@@ -50,6 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -68,17 +69,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classifier_.cs" />
-    <Compile Include="Class_.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="File_handler.cs" />
     <Compile Include="GestureManager.cs" />
-    <Compile Include="Interface_.cs" />
     <Compile Include="ItemLocationManager.cs" />
     <Compile Include="KinectHandler.cs" />
-    <Compile Include="KinectStateManager.cs" />
     <Compile Include="Method_.cs" />
     <Compile Include="Package_.cs" />
     <Compile Include="SkeletonHistoryManager.cs" />
+    <Compile Include="SpeechManager.cs" />
     <Compile Include="TestWindow.xaml.cs">
       <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
@@ -90,7 +89,8 @@
     <Compile Include="ViewerWindow.xaml.cs">
       <DependentUpon>ViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Visibility.cs" />
+    <Compile Include="ViewManager.cs" />
+    <Compile Include="Enumerations.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

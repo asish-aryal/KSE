@@ -6,9 +6,10 @@
 
 
         <Label Content="Kinect Software Explorer" Height="165" HorizontalAlignment="Center" Margin="-18,0,6,0" Name="label1" VerticalAlignment="Top" Width="1258" FontSize="80" FlowDirection="LeftToRight" HorizontalContentAlignment="Center"  MouseDown="test_window" />
-        <Image Height="288" HorizontalAlignment="Left" Margin="332,146,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="540" Source="/Kinect_SE_Tool;component/Resources/images/kinect.jpg" MouseDown="test_window2">
+        <!--<Image Height="288" HorizontalAlignment="Left" Margin="332,146,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="540" Source="/Kinect_SE_Tool;component/Resources/images/kinect.jpg" MouseDown="test_window2">
 
-        </Image>
+        </Image> -->
+        <Image Source="/Kinect%20Explorer;component/Resources/images/kinect.jpg" Height="288" Name="kinect_image"></Image>
         <Label Content="This application is designed to be used with Microsoft XBox Kinect. However, it can also be used with a standard Keyboard." Height="31" HorizontalAlignment="Center" Margin="-12,639,0,0" Name="label2" VerticalAlignment="Top" Width="1270" FontSize="14" HorizontalContentAlignment="Center"/>
         <Button Content="Lets Begin!" Height="85" HorizontalAlignment="Left" Margin="450,497,0,0" Name="begin" VerticalAlignment="Top" Width="350" FontSize="32" Click="begin_Click" />
         <Button Content="Help" Height="55" HorizontalAlignment="Left" Margin="1096,614,0,0" Name="help" VerticalAlignment="Top" Width="150" FontSize="32" />

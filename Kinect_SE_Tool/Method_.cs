@@ -14,6 +14,7 @@ namespace Kinect_Explorer
         private Member_Level_Visibility method_visibility = Member_Level_Visibility.PRIVATE;
         private String returnType = "void";
         private bool isSynchronized = false;
+        private bool isAbstract = false;
         private List<Variable_> parameters = new List<Variable_>();
 
         public String Name
@@ -25,6 +26,12 @@ namespace Kinect_Explorer
         {
             get { return this.method_is_static; }
             set { this.method_is_static = value; }
+        }
+
+        public Boolean IsAbstract
+        {
+            get { return this.isAbstract; }
+            set { this.isAbstract = value; }
         }
 
         public Member_Level_Visibility Visibility

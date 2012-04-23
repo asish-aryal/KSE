@@ -11,7 +11,8 @@ namespace Kinect_Explorer
         private List<Method_> methods;
         private Package_ parent;
         private Top_Level_Visibility visibility;
-        private List<Field_> fields = new List<Field_>();
+        private ClassifierType classifierType;
+        private List<Field_> fields;
 
         public Top_Level_Visibility Visibility
         {
@@ -25,6 +26,11 @@ namespace Kinect_Explorer
             get { return name; }
         }
 
+        public ClassifierType ClassiferType
+        {
+            get { return classifierType; }
+        }
+
         public List<Field_> Fields
         {
             get { return fields; }
@@ -35,16 +41,13 @@ namespace Kinect_Explorer
             get { return methods; }
         }
 
-        public Classifier_(String name)
+        public Classifier_(String name, ClassifierType type)
         {
             this.name = name;
+            this.classifierType = type;
             this.methods = new List<Method_>();
-        }
+            this.fields = new List<Field_>();
 
-        public Classifier_(String name, List<Method_> methods)
-        {
-            this.name = name;
-            this.methods = methods;
         }
 
         public Package_ Parent
