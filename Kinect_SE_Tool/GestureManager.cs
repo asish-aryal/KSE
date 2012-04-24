@@ -11,9 +11,10 @@ using System.Threading;
 
 namespace Kinect_Explorer
 {
-    class GestureManager
+    class GestureManager : Observable
     {
-        ViewManager vManager = ViewManager.getInstance();
+        private GRStates state;
+        ViewManager vManager;
         KinectSensor sensor;
         private const int skeletonCount = 6;
         private Skeleton[] allSkeletons = new Skeleton[skeletonCount];
@@ -22,12 +23,15 @@ namespace Kinect_Explorer
         int historyDuration = 2; //in seconds
         private SkeletonHistoryManager historyManager;
         //private bool zooming_in = false;
-
         JointType pointerJointType;
+        private Gestures previousGesture;
+        private DateTime lastGestureTime = DateTime.Now;
+
 
 
         public GestureManager(KinectSensor sensor)
         {
+            
             this.sensor = sensor;
             historyManager= new SkeletonHistoryManager(historyDuration);
             //rightHandPositions = new List<Joint>();
@@ -35,32 +39,78 @@ namespace Kinect_Explorer
             pointerJointType = JointType.HandRight;
         }
 
+        public GRStates State
+        {
+            get { return state; }
+        }
 
         public void processFrames(AllFramesReadyEventArgs e)
         {
-            Skeleton first = GetFirstSkeleton(e);
-            if (first == null)
+            vManager = ViewManager.getInstance();
+            Skeleton firstSkeleton = GetFirstSkeleton(e);
+            if (firstSkeleton == null)
             {
-                vManager.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_not_ready.png", UriKind.Relative));
+
+                changeState(GRStates.CANNOT_SEE);
+
                 return;
             }
 
-            vManager.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_ready.png", UriKind.Relative));
-            update_pointer(first);
+            //vManager.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_ready.png", UriKind.Relative));
+            //update_pointer(firstSkeleton);
 
-            historyManager.addToHistory(first);
+            historyManager.addToHistory(firstSkeleton);
 
             if (historyManager.IsReady)
-            { recogniseGestures(); }
+            { 
+                recogniseGestures();
+                changeState(GRStates.LOOKING);
+            }
             else
-            { vManager.get_gesture_status_icon().Source = new BitmapImage(new Uri("./Resources/images/gesture_waiting.png", UriKind.Relative)); }
+            { changeState(GRStates.GETTING_READY);}
+            Notify();
         }
 
+        private void changeState(GRStates changedState)
+        {
+            if (state != changedState)
+            {
+                state = changedState;
+                Notify();
+            }
+        }
 
         private void recogniseGestures()
         {
             
             checkZoomGesture();
+            checkSwipeGesture();
+        }
+
+        private void checkSwipeGesture()
+        {
+            if ((DateTime.Now - lastGestureTime).Seconds < 1)
+            { return; }
+            double initial_position = historyManager.getJoint(JointType.HandLeft, 0.2).Position.X;
+            double final_position = historyManager.getJoint(JointType.HandLeft, 0).Position.X;
+            double diff = final_position - initial_position;
+            if (diff >= 0.2)
+            {
+                vManager.previous_page();
+                lastGestureTime = DateTime.Now;
+                //vWindow.zoom_in(1.5);
+                //Thread.Sleep(1000);
+                //historyManager.clearHistory();
+            }
+            else if (diff <= -0.2)
+            {
+                vManager.next_page();
+                lastGestureTime = DateTime.Now;
+                //Thread.Sleep(1000);
+                //historyManager.clearHistory();
+            }
+
+
         }
 
         private void checkZoomGesture()
@@ -71,9 +121,14 @@ namespace Kinect_Explorer
             //vWindow.speech_feedback_value.Text = diff.ToString();
             if (diff >= 0.25)
             {
-                
 
-                        vManager.zoom_in(1.04);
+                if (!((previousGesture == Gestures.ZoomOut) && ((DateTime.Now - lastGestureTime).Seconds < 1)))
+                { 
+                    vManager.zoom_in(1.04);
+                    lastGestureTime = DateTime.Now;
+                    previousGesture = Gestures.ZoomIn;
+                
+                }
 
                 
                 //vWindow.zoom_in(1.5);
@@ -82,7 +137,12 @@ namespace Kinect_Explorer
             }
             else if (diff <= -0.25)
             {
-                vManager.zoom_out(1.04);
+                if (!((previousGesture == Gestures.ZoomIn) && ((DateTime.Now - lastGestureTime).Seconds < 1)))
+                { 
+                    vManager.zoom_out(1.04);
+                    lastGestureTime = DateTime.Now;
+                    previousGesture = Gestures.ZoomOut;
+                }
                 //Thread.Sleep(1000);
                 //historyManager.clearHistory();
             }
@@ -90,43 +150,41 @@ namespace Kinect_Explorer
         }
 
 
-        private void update_pointer(Skeleton sk)
+
+
+        public double getPointerDiameter()
         {
-            //set scaled position
-            //ScalePosition(headImage, first.Joints[JointType.Head]);
-            //ScalePosition(vWindow.get_pointer_left(), sk.Joints[JointType.HandLeft]);
-            //Joint scaledJoint = first.Joints[JointType.HandLeft].ScaleTo((int)vWindow.main_view.ActualWidth - (int)vWindow.get_pointer_right().ActualWidth, (int)vWindow.main_view.ActualHeight - (int)vWindow.get_pointer_right().ActualHeight, 0.5f, 0.5f);
-            //Canvas.SetLeft(vWindow.get_pointer_left(), scaledJoint.Position.X);
-            //Canvas.SetTop(vWindow.get_pointer_left(), scaledJoint.Position.Y);
-
-            //ScalePosition(vWindow.get_pointer_right(), sk.Joints[pointerJoint]);
-
-            ScalePointerPosition(vManager.get_pointer_right(), sk);
-
-            vManager.get_pointer_right().Width = vManager.get_pointer_right().Height = Math.Abs((int)((sk.Joints[JointType.HandLeft].Position.Z-0.8)*100));
-
-            //GetCameraPoint(first, e);
-            vManager.update_selection_from_pointer();
+            if (historyManager.IsReady)
+            {
+                return Math.Abs((int)((historyManager.getJoint(JointType.HandLeft,0).Position.Z - 0.8) * 100)); 
+                
+            }
+            else
+            { return 30; }
         }
 
-        private void ScalePointerPosition(FrameworkElement element, Skeleton skeleton)
+        public Point getPointerPosition(double scaleTo_X, double scaleTo_Y)
         {
-            Joint pointerJoint = skeleton.Joints[pointerJointType];
-            double scaled_X = (pointerJoint.Position.X - skeleton.Joints[JointType.Spine].Position.X) * (vManager.getMainCanvas().ActualWidth / 0.5);
+            //scaleTo_X = scaleTo_X - getPointerDiameter();
+            //scaleTo_Y = scaleTo_Y - getPointerDiameter();
+            if (!historyManager.IsReady)
+            { return new Point(scaleTo_X, scaleTo_Y); }
+            Joint pointerJoint = historyManager.getJoint(pointerJointType, 0);// skeleton.Joints[pointerJointType];
+            double scaled_X = (pointerJoint.Position.X - historyManager.getJoint(JointType.Spine, 0).Position.X) * (scaleTo_X/ 0.5);
             if (scaled_X < 0)
             { scaled_X = 0; }
-            if (scaled_X > vManager.getMainCanvas().ActualWidth)
-            { scaled_X = vManager.getMainCanvas().ActualWidth; }
-            double scaled_Y = (skeleton.Joints[JointType.ShoulderRight].Position.Y - pointerJoint.Position.Y) * (vManager.getMainCanvas().ActualHeight / 0.5);
-            if (scaled_Y < 0) 
+            if (scaled_X > scaleTo_X)
+            { scaled_X = scaleTo_X; }
+            double scaled_Y = (historyManager.getJoint(JointType.ShoulderRight, 0).Position.Y - pointerJoint.Position.Y) * (scaleTo_Y / 0.5);
+            if (scaled_Y < 0)
             { scaled_Y = 0; }
-            if (scaled_Y > vManager.getMainCanvas().ActualHeight)
-            { scaled_Y = vManager.getMainCanvas().ActualHeight; }
+            if (scaled_Y > scaleTo_Y)
+            { scaled_Y = scaleTo_Y; }
 
+            return new Point(scaled_X, scaled_Y);
 
-            Canvas.SetLeft(element, (int)scaled_X- vManager.get_pointer_right().ActualWidth/2);
-            Canvas.SetTop(element, (int)scaled_Y - vManager.get_pointer_right().ActualHeight/2);
-
+            //Canvas.SetLeft(element, (int)scaled_X - vManager.get_pointer_right().ActualWidth / 2);
+            //Canvas.SetTop(element, (int)scaled_Y - vManager.get_pointer_right().ActualHeight / 2);
         }
 
         Skeleton GetFirstSkeleton(AllFramesReadyEventArgs e)

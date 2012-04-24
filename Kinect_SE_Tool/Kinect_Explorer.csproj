@@ -75,6 +75,8 @@
     <Compile Include="ItemLocationManager.cs" />
     <Compile Include="KinectHandler.cs" />
     <Compile Include="Method_.cs" />
+    <Compile Include="Observable.cs" />
+    <Compile Include="Observer.cs" />
     <Compile Include="Package_.cs" />
     <Compile Include="SkeletonHistoryManager.cs" />
     <Compile Include="SpeechManager.cs" />

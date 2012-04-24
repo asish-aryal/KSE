@@ -29,6 +29,7 @@ namespace Kinect_Explorer
         {
             
             ViewManager vManager = ViewManager.getInstance();
+            vManager.start();
             this.Close();
 
         }

@@ -59,7 +59,7 @@ namespace Kinect_Explorer
             {
                 if (node.Name.ToUpper() == "PACKAGE")
                 {
-                    package.add_child(traverse_nodes(node.ChildNodes, node.Attributes.Item(0).Value));
+                    package.add_child(traverse_nodes(node.ChildNodes, node.Attributes["name"].Value));
                 }
                 else if((node.Name.ToUpper() == "CLASS") || (node.Name.ToUpper() == "INTERFACE"))
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -10,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace Kinect_Explorer
 {
-    class ViewManager
+    class ViewManager : Observer
     {
         private ViewerWindow vWindow;
 
@@ -32,9 +33,13 @@ namespace Kinect_Explorer
         private Ellipse pointer_left;
         private Brush selection_color;
 
+        private GestureManager gManager;
+        private SpeechManager sManager;
+
         private ViewManager()
         {
             vWindow = new ViewerWindow();
+            vWindow.Attach(this);
             vWindow.Show();
             controller = new Controller();
             item_location_manager = new ItemLocationManager();
@@ -42,10 +47,58 @@ namespace Kinect_Explorer
             current_item_width = 150;
             min_zoom = 150;
             doc_loaded = false;
-            selection_color = Brushes.Beige;
+            selection_color = Brushes.LightGreen;
             initialise_pointers();
+            kinectHandler = new KinectHandler(vWindow.kinectSensorChooser);
+
+            gManager = kinectHandler.getGestureManager();
+            sManager = kinectHandler.getSpeechManager();
+            gManager.Attach(this);
+            sManager.Attach(this);
+            //repaint();
+
+
         }
 
+        public override void Update()
+        {
+            if (vWindow.IsLoaded)
+            {
+                updatePointer(gManager.getPointerPosition(vWindow.main_view.ActualWidth, vWindow.main_view.ActualHeight), gManager.getPointerDiameter());
+                update_selection_from_pointer();
+                repaint();
+                updateStatusIcons();
+            }
+
+
+        }
+
+        private void updatePointer(Point position, double diameter)
+        {
+            Canvas.SetLeft(pointer_right, (int)(position.X - diameter/4));
+            Canvas.SetTop(pointer_right, (int)(position.Y - diameter/4));
+            //vWindow.main_view.Children.Add(pointer_right);
+        }
+
+        private void updateStatusIcons()
+        {
+            //For Gestures
+            if (gManager.State == GRStates.CANNOT_SEE)
+            { vWindow.gesture_status.Source = new BitmapImage(new Uri("./Resources/images/gesture_not_ready.png", UriKind.Relative)); }
+            else if (gManager.State == GRStates.GETTING_READY)
+            { vWindow.gesture_status.Source = new BitmapImage(new Uri("./Resources/images/gesture_waiting.png", UriKind.Relative)); }
+            else if (gManager.State == GRStates.LOOKING)
+            { vWindow.gesture_status.Source = new BitmapImage(new Uri("./Resources/images/gesture_ready.png", UriKind.Relative)); }
+
+            //For Speech
+            if (sManager.Status == SRStates.NOT_LISTENING)
+            { vWindow.speech_status.Source = new BitmapImage(new Uri("./Resources/images/mic_not_ready.png", UriKind.Relative)); }
+            else if (sManager.Status == SRStates.LISTENING)
+            { vWindow.speech_status.Source = new BitmapImage(new Uri("./Resources/images/mic_ready.png", UriKind.Relative)); }
+            else if (sManager.Status == SRStates.GETTING_READY)
+            { vWindow.speech_status.Source = new BitmapImage(new Uri("./Resources/images/mic_waiting.png", UriKind.Relative)); }
+
+        }
 
         public static ViewManager getInstance()
         {
@@ -61,9 +114,8 @@ namespace Kinect_Explorer
 
         public void start()
         {
-            kinectHandler = new KinectHandler();
             kinectHandler.start();
-
+            
             Keyboard.Focus(vWindow.help);
         }
 
@@ -104,11 +156,7 @@ namespace Kinect_Explorer
         public Ellipse get_pointer_left()
         { return pointer_left; }
 
-        public Image get_gesture_status_icon()
-        { return vWindow.gesture_status; }
-
-        public Image get_speech_status_icon()
-        { return vWindow.speech_status; }
+        
 
         public TextBlock get_speech_suggestion_block()
         { return vWindow.speech_suggestion_value; }
@@ -250,7 +298,7 @@ namespace Kinect_Explorer
                 if (((from_top > y_pos) && (from_top < (y_pos + current_item_width * aspect_ratio))) && ((from_left > x_pos) && (from_left < (x_pos + current_item_width))))
                 {
                     item_location_manager.SELECTED_ITEM = (item_location_manager.CURRENT_PAGE - 1) * item_location_manager.ITEMS_PER_PAGE + i + 1;
-                    repaint();
+                    //repaint();
                     break;
                 }
             }
@@ -273,7 +321,7 @@ namespace Kinect_Explorer
                     pkg = current_package.Parent.Children_Packages[i];
                     if (pkg.Equals(current_package))
                     {
-                        item_location_manager.CURRENT_PAGE = i + 1;
+                        item_location_manager.SELECTED_ITEM = i + 1;
                         break;
                     }
                 }
@@ -519,23 +567,7 @@ namespace Kinect_Explorer
             vWindow.main_view.Children.Add(package_name_block);
         }
 
-        private int get_items_per_column()
-        {
-            int class_frame_width = current_item_width;
-            int class_frame_height = (int)((double)class_frame_width * aspect_ratio);
-            int height_of_canvas = (int)vWindow.main_view.ActualHeight;
-            int vertical_separation = get_separation_distance(class_frame_height, height_of_canvas);
-            return height_of_canvas / (class_frame_height + vertical_separation);
-        }
-
-        private int get_items_per_row()
-        {
-            int class_frame_width = current_item_width;
-            int width_of_canvas = (int)vWindow.main_view.ActualWidth;
-            int horizontal_separation = get_separation_distance(class_frame_width, width_of_canvas);
-            return width_of_canvas / (class_frame_width + horizontal_separation);
-        }
-
+        
         private String get_package_heirarchy(Package_ package)
         {
             if (package.Parent != null)
@@ -603,7 +635,7 @@ namespace Kinect_Explorer
             }
         }
 
-
+        
 
 
 
@@ -629,6 +661,21 @@ namespace Kinect_Explorer
                     { vWindow.speech_suggestion_value.Inlines.Add("Previous Page" + Environment.NewLine); }
                 }
             }
+            else
+            {
+                String msg = "";
+                TextBlock browse = new TextBlock();
+                 msg += "Press B ";
+                if(sManager.Status == SRStates.LISTENING)
+                { msg += "or say \"Browse\" "; }
+                msg += "to open an XML file";
+                browse.Text = msg;
+                browse.FontSize = 40;
+                vWindow.main_view.Children.Clear();
+                vWindow.main_view.Children.Add(browse);
+                Canvas.SetLeft(browse, vWindow.main_view.ActualWidth / 2 - browse.Width/2);
+                Canvas.SetTop(browse, vWindow.main_view.ActualHeight / 2 - browse.ActualHeight / 2);
+            }
         }
 
         private bool isClassifier(int item_number)
@@ -653,37 +700,7 @@ namespace Kinect_Explorer
             kinectHandler.StopKinect();
         }
 
-        private void set_item_positions(int Canvas_Width, int Canvas_Height, int item_width, int item_height, int no_of_items)
-        {
-            List<PointCollection> pages = new List<PointCollection>();
-            int vertical_separation = get_separation_distance(item_height, Canvas_Height);
-            int horizontal_separation = get_separation_distance(item_width, Canvas_Width);
 
-            PointCollection points_in_page;
-            int cur_x;
-            int cur_y;
-
-            int cur_item = 1;
-            while (cur_item <= no_of_items)
-            {
-                points_in_page = new PointCollection();
-
-                cur_y = vertical_separation;
-                while ((cur_y + item_height) < Canvas_Height)
-                {
-                    cur_x = horizontal_separation;
-                    while ((cur_x + item_width) < Canvas_Width)
-                    {
-                        points_in_page.Add(new Point((double)cur_x, (double)cur_y));
-                        cur_x = cur_x + item_width + horizontal_separation;
-                        cur_item++;
-                    }
-
-                    cur_y = cur_y + item_height + vertical_separation;
-                }
-                pages.Add(points_in_page);
-            }
-        }
 
     }
 }

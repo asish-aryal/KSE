@@ -15,9 +15,9 @@ using System.Windows.Threading;
 
 namespace Kinect_Explorer
 {
-    class SpeechManager
+    class SpeechManager : Observable
     {
-
+        private SRStates status;
         private TextBlock speech_suggestion_block;
         private Image speech_status_icon;
         private ViewManager vManager;
@@ -28,12 +28,18 @@ namespace Kinect_Explorer
         private SpeechRecognitionEngine speechRecognizer;
 
 
-        public SpeechManager(KinectSensor ks, ViewManager vm)
+        public SpeechManager(KinectSensor ks)
         {
             this._sensor = ks;
-            this.vManager = vm;
-            speech_suggestion_block = vManager.get_speech_suggestion_block();
-            speech_status_icon = vManager.get_speech_status_icon();
+            //this.vManager = vm;
+            
+            //speech_status_icon = vManager.get_speech_status_icon();
+
+        }
+
+        public SRStates Status
+        {
+            get { return status; }
         }
 
         public void updateSensor(KinectSensor sensor)
@@ -43,8 +49,10 @@ namespace Kinect_Explorer
 
         public void start()
         {
+            
+            vManager = ViewManager.getInstance();
+            speech_suggestion_block = vManager.get_speech_suggestion_block();
             speechRecognizer = CreateSpeechRecognizer();
-
             if (speechRecognizer != null)
             {
                 // NOTE: Need to wait 4 seconds for device to be ready to stream audio right after initialization
@@ -52,8 +60,7 @@ namespace Kinect_Explorer
                 this.readyTimer.Tick += this.ReadyTimerTick;
                 this.readyTimer.Interval = new TimeSpan(0, 0, 4);
                 this.readyTimer.Start();
-                speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_waiting.png", UriKind.Relative));
-                //status_block.Text = "Hold on... I'm getting ready";
+                changeState(SRStates.GETTING_READY);
                 //this.UpdateInstructionsText(string.Empty);
 
                 //this.Closing += this.MainWindowClosing;
@@ -61,15 +68,27 @@ namespace Kinect_Explorer
 
         }
 
+        private void changeState(SRStates changedState)
+        {
+            if (status != changedState)
+            {
+                status = changedState;
+                Notify();
+            }
+        }
+
         private void ReadyTimerTick(object sender, EventArgs e)
         {
+            
             //this.Start();
-            speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_ready.png", UriKind.Relative));
+            //speech_status_icon.Source = new BitmapImage(new Uri("./Resources/images/mic_ready.png", UriKind.Relative));
+            
             //status_block.Text = "Alright, Hit Me!";
 
             this.readyTimer.Stop();
             this.readyTimer = null;
-
+            
+            changeState(SRStates.LISTENING);
             var audioSource = _sensor.AudioSource;
             //audioSource.BeamAngleMode = BeamAngleMode.Adaptive;
             var kinectStream = audioSource.Start();

@@ -45,8 +45,8 @@
             <TextBlock Name="speech_suggestion_value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,50" Background="#D4D4D4" Height="249" Width="320" FontSize="30" TextAlignment="Right" Foreground="Black" TextWrapping="Wrap" Focusable="False" Padding="10"></TextBlock>
             <Button Height="40" Width="120" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" FontSize="16" Name="help" Content="Help" />
             <!--<TextBlock Name="Status_Label" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#000000" Height="45" Width="80" FontSize="24" TextAlignment="Center" Foreground="White" TextWrapping="Wrap" Focusable="False" >Status</TextBlock>-->
-            <Image Source="/Kinect_SE_Tool;component/Resources/images/gesture_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Name="gesture_status" />
-            <Image Source="/Kinect_SE_Tool;component/Resources/images/mic_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
+            <Image Source="/Kinect%20Explorer;component/Resources/images/gesture_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Name="gesture_status" />
+            <Image Source="/Kinect%20Explorer;component/Resources/images/mic_not_ready.png" MaxHeight="45" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,0" Name="speech_status" />
             <!--<TextBlock Name="Status_Value" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" Background="#D4D4D4" Height="35" Width="240" FontSize="16" TextAlignment="Center" Foreground="Blue" TextWrapping="Wrap" Focusable="False" Visibility="Hidden"></TextBlock>-->
             <my:KinectSensorChooser  Name="kinectSensorChooser" VerticalAlignment="Bottom" Width="320" Height="240" Margin="0,0,0,355" Focusable="False"  />
         </Grid>

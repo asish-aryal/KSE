@@ -22,40 +22,65 @@ namespace Kinect_Explorer
     {
 		
 
-        ViewManager vManager;
+        private ViewManager vManager;
+        
 
-
+        private List<Observer> observers = new List<Observer>();
 
         public ViewerWindow()
         {
             InitializeComponent();
-
+            
         }
+
+        public void Attach(Observer observer)
+        {
+            observers.Add(observer);
+        }
+
+        public void Detach(Observer observer)
+        {
+            observers.Remove(observer);
+        }
+
+        public void Notify()
+        {
+            foreach (Observer o in observers)
+            {
+                o.Update();
+            }
+        }
+
+
+
 
 
 
 
         private void Window_Closing(object sender, EventArgs e)
         {
-            vManager.stopKinect();
+            Notify();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             vManager = ViewManager.getInstance();
-            vManager.start();
+            //vManager.start();
             
             
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //repaint();
+            Notify();
         }
 
 
         private void KeyboardInput(object sender, KeyEventArgs e)
         {
+            //lastKey = e.Key;
+            //Notify();
+            
             vManager.keyboard_input(sender, e);
         }
     }

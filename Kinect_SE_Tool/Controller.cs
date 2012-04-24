@@ -8,7 +8,7 @@ using System.Windows.Controls;
 namespace Kinect_Explorer
 {
 
-    class Controller
+    class Controller 
     {
 
 

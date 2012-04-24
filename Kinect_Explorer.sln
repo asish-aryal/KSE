@@ -5,6 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinect_Explorer", "Kinect_S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C95B2F08-4355-4E40-BB7D-A8515A8369AB}"
 	ProjectSection(SolutionItems) = preProject
+		Kinect_Explorer.vsd = Kinect_Explorer.vsd
 		Kinect_SE_Tool.vsd = Kinect_SE_Tool.vsd
 	EndProjectSection
 EndProject

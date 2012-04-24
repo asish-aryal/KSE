@@ -27,7 +27,7 @@ namespace Kinect_Explorer
     { LISTENING, GETTING_READY, NOT_LISTENING }
 
     public enum GRStates
-    { LOOKING, NOT_LOOKING, GETTING_READY }
+    { LOOKING, CANNOT_SEE, GETTING_READY }
 
 
     enum Gestures
